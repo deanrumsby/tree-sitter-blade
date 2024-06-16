@@ -6,10 +6,20 @@ module.exports = grammar(html, {
   rules: {
     document: ($) => repeat($._node),
 
-    escaped_echo_statement: ($) => seq("{{", $.text, "}}"),
+    escaped_echo_statement: ($) => prec(3, seq("{{", $.text, "}}")),
 
-    attribute_value: ($) =>
-      choice(prec(2, $.escaped_echo_statement), prec(1, /[^<>"'=]/)),
+    attribute: ($) =>
+      choice(
+        $.escaped_echo_statement,
+        seq(
+          $.attribute_name,
+          optional(
+            seq("=", choice($.attribute_value, $.quoted_attribute_value)),
+          ),
+        ),
+      ),
+
+    attribute_value: ($) => choice($.escaped_echo_statement, /[^<>"'=]/),
 
     quoted_attribute_value: ($) =>
       choice(
@@ -18,10 +28,7 @@ module.exports = grammar(html, {
           optional(
             alias(
               repeat1(
-                choice(
-                  prec(2, $.escaped_echo_statement),
-                  prec(1, choice(/[^'{}]+/, /[{}]/)),
-                ),
+                choice($.escaped_echo_statement, choice(/[^'{}]+/, /[{}]/)),
               ),
               $.attribute_value,
             ),
@@ -33,10 +40,7 @@ module.exports = grammar(html, {
           optional(
             alias(
               repeat1(
-                choice(
-                  prec(2, $.escaped_echo_statement),
-                  prec(1, choice(/[^"{}]+/, /[{}]/)),
-                ),
+                choice($.escaped_echo_statement, choice(/[^"{}]+/, /[{}]/)),
               ),
               $.attribute_value,
             ),

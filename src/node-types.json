@@ -16,6 +16,10 @@
           "named": true
         },
         {
+          "type": "escaped_echo_statement",
+          "named": true
+        },
+        {
           "type": "quoted_attribute_value",
           "named": true
         }

@@ -1,0 +1,44 @@
+{
+  "name": "tree-sitter-blade",
+  "version": "0.1.0",
+  "description": "a tree-sitter grammar for laravel blade files",
+  "main": "index.js",
+  "types": "bindings/node",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "install": "node-gyp-build",
+    "prebuildify": "prebuildify --napi --strip"
+  },
+  "author": "Dean Rumsby",
+  "license": "MIT",
+  "dependencies": {
+    "tree-sitter-html": "^0.20.3",
+    "node-addon-api": "^7.1.0",
+    "node-gyp-build": "^4.8.0"
+  },
+  "peerDependencies": {
+    "tree-sitter": "^0.21.0"
+  },
+  "peerDependenciesMeta": {
+    "tree_sitter": {
+      "optional": true
+    }
+  },
+  "devDependencies": {
+    "prebuildify": "^6.0.0"
+  },
+  "files": [
+    "grammar.js",
+    "binding.gyp",
+    "prebuilds/**",
+    "bindings/node/*",
+    "queries/*",
+    "src/**"
+  ],
+  "tree-sitter": [
+    {
+      "scope": "source.blade",
+      "injection-regex": "^blade$"
+    }
+  ]
+}

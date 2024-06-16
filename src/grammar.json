@@ -368,8 +368,25 @@
       "value": "[^<>\"'/=\\s]+"
     },
     "attribute_value": {
-      "type": "PATTERN",
-      "value": "[^<>\"'=\\s]+"
+      "type": "CHOICE",
+      "members": [
+        {
+          "type": "PREC",
+          "value": 2,
+          "content": {
+            "type": "SYMBOL",
+            "name": "escaped_echo_statement"
+          }
+        },
+        {
+          "type": "PREC",
+          "value": 1,
+          "content": {
+            "type": "PATTERN",
+            "value": "[^<>\"'=]"
+          }
+        }
+      ]
     },
     "entity": {
       "type": "PATTERN",
@@ -391,8 +408,37 @@
                 {
                   "type": "ALIAS",
                   "content": {
-                    "type": "PATTERN",
-                    "value": "[^']+"
+                    "type": "REPEAT1",
+                    "content": {
+                      "type": "CHOICE",
+                      "members": [
+                        {
+                          "type": "PREC",
+                          "value": 2,
+                          "content": {
+                            "type": "SYMBOL",
+                            "name": "escaped_echo_statement"
+                          }
+                        },
+                        {
+                          "type": "PREC",
+                          "value": 1,
+                          "content": {
+                            "type": "CHOICE",
+                            "members": [
+                              {
+                                "type": "PATTERN",
+                                "value": "[^'{}]+"
+                              },
+                              {
+                                "type": "PATTERN",
+                                "value": "[{}]"
+                              }
+                            ]
+                          }
+                        }
+                      ]
+                    }
                   },
                   "named": true,
                   "value": "attribute_value"
@@ -421,8 +467,37 @@
                 {
                   "type": "ALIAS",
                   "content": {
-                    "type": "PATTERN",
-                    "value": "[^\"]+"
+                    "type": "REPEAT1",
+                    "content": {
+                      "type": "CHOICE",
+                      "members": [
+                        {
+                          "type": "PREC",
+                          "value": 2,
+                          "content": {
+                            "type": "SYMBOL",
+                            "name": "escaped_echo_statement"
+                          }
+                        },
+                        {
+                          "type": "PREC",
+                          "value": 1,
+                          "content": {
+                            "type": "CHOICE",
+                            "members": [
+                              {
+                                "type": "PATTERN",
+                                "value": "[^\"{}]+"
+                              },
+                              {
+                                "type": "PATTERN",
+                                "value": "[{}]"
+                              }
+                            ]
+                          }
+                        }
+                      ]
+                    }
                   },
                   "named": true,
                   "value": "attribute_value"
@@ -441,15 +516,48 @@
       ]
     },
     "text": {
-      "type": "PATTERN",
-      "value": "[^<>&\\s]([^<>&]*[^<>&\\s])?"
-    },
-    "source_file": {
-      "type": "REPEAT",
+      "type": "REPEAT1",
       "content": {
-        "type": "SYMBOL",
-        "name": "_node"
+        "type": "CHOICE",
+        "members": [
+          {
+            "type": "PREC",
+            "value": 2,
+            "content": {
+              "type": "PATTERN",
+              "value": "[^<>{}&\\s]([^<>{}&]*[^<>{}&\\s])?"
+            }
+          },
+          {
+            "type": "PREC",
+            "value": 1,
+            "content": {
+              "type": "PATTERN",
+              "value": "[{}]"
+            }
+          }
+        ]
       }
+    },
+    "escaped_echo_statement": {
+      "type": "SEQ",
+      "members": [
+        {
+          "type": "STRING",
+          "value": "{{"
+        },
+        {
+          "type": "TOKEN",
+          "content": {
+            "type": "SYMBOL",
+            "name": "text"
+          }
+        },
+        {
+          "type": "STRING",
+          "value": "}}"
+        }
+      ]
     }
   },
   "extras": [

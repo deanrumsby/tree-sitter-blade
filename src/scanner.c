@@ -280,10 +280,6 @@ static bool scan_end_tag_name(Scanner *scanner, TSLexer *lexer) {
         pop_tag(scanner);
         lexer->result_symbol = END_TAG_NAME;
     } else {
-        printf("%d", array_back(&scanner->tags)->type);
-        printf(" -- ");
-        printf("%d", STYLE);
-        printf("\n");
         lexer->result_symbol = ERRONEOUS_END_TAG_NAME;
     }
 

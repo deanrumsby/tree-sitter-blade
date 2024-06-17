@@ -12,7 +12,6 @@
   "author": "Dean Rumsby",
   "license": "MIT",
   "dependencies": {
-    "tree-sitter-html": "^0.20.3",
     "node-addon-api": "^7.1.0",
     "node-gyp-build": "^4.8.0"
   },

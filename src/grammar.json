@@ -38,6 +38,53 @@
       "type": "PATTERN",
       "value": "[Dd][Oo][Cc][Tt][Yy][Pp][Ee]"
     },
+    "echo_statement": {
+      "type": "CHOICE",
+      "members": [
+        {
+          "type": "SYMBOL",
+          "name": "escaped_echo_statement"
+        },
+        {
+          "type": "SYMBOL",
+          "name": "not_escaped_echo_statement"
+        }
+      ]
+    },
+    "escaped_echo_statement": {
+      "type": "SEQ",
+      "members": [
+        {
+          "type": "SYMBOL",
+          "name": "_escaped_echo_statement_start"
+        },
+        {
+          "type": "SYMBOL",
+          "name": "php_text"
+        },
+        {
+          "type": "SYMBOL",
+          "name": "_escaped_echo_statement_end"
+        }
+      ]
+    },
+    "not_escaped_echo_statement": {
+      "type": "SEQ",
+      "members": [
+        {
+          "type": "SYMBOL",
+          "name": "_not_escaped_echo_statement_start"
+        },
+        {
+          "type": "SYMBOL",
+          "name": "php_text"
+        },
+        {
+          "type": "SYMBOL",
+          "name": "_not_escaped_echo_statement_end"
+        }
+      ]
+    },
     "_node": {
       "type": "CHOICE",
       "members": [
@@ -329,7 +376,7 @@
       "members": [
         {
           "type": "SYMBOL",
-          "name": "escaped_echo_statement"
+          "name": "echo_statement"
         },
         {
           "type": "SEQ",
@@ -377,17 +424,8 @@
       "value": "[^<>\"'/=\\s]+"
     },
     "attribute_value": {
-      "type": "CHOICE",
-      "members": [
-        {
-          "type": "SYMBOL",
-          "name": "escaped_echo_statement"
-        },
-        {
-          "type": "PATTERN",
-          "value": "[^<>\"'=]"
-        }
-      ]
+      "type": "PATTERN",
+      "value": "[^<>\"'=\\s]+"
     },
     "entity": {
       "type": "PATTERN",
@@ -409,29 +447,8 @@
                 {
                   "type": "ALIAS",
                   "content": {
-                    "type": "REPEAT1",
-                    "content": {
-                      "type": "CHOICE",
-                      "members": [
-                        {
-                          "type": "SYMBOL",
-                          "name": "escaped_echo_statement"
-                        },
-                        {
-                          "type": "CHOICE",
-                          "members": [
-                            {
-                              "type": "PATTERN",
-                              "value": "[^'{}]+"
-                            },
-                            {
-                              "type": "PATTERN",
-                              "value": "[{}]"
-                            }
-                          ]
-                        }
-                      ]
-                    }
+                    "type": "PATTERN",
+                    "value": "[^']+"
                   },
                   "named": true,
                   "value": "attribute_value"
@@ -460,29 +477,8 @@
                 {
                   "type": "ALIAS",
                   "content": {
-                    "type": "REPEAT1",
-                    "content": {
-                      "type": "CHOICE",
-                      "members": [
-                        {
-                          "type": "SYMBOL",
-                          "name": "escaped_echo_statement"
-                        },
-                        {
-                          "type": "CHOICE",
-                          "members": [
-                            {
-                              "type": "PATTERN",
-                              "value": "[^\"{}]+"
-                            },
-                            {
-                              "type": "PATTERN",
-                              "value": "[{}]"
-                            }
-                          ]
-                        }
-                      ]
-                    }
+                    "type": "PATTERN",
+                    "value": "[^\"]+"
                   },
                   "named": true,
                   "value": "attribute_value"
@@ -501,52 +497,8 @@
       ]
     },
     "text": {
-      "type": "TOKEN",
-      "content": {
-        "type": "REPEAT1",
-        "content": {
-          "type": "CHOICE",
-          "members": [
-            {
-              "type": "PREC",
-              "value": 2,
-              "content": {
-                "type": "PATTERN",
-                "value": "[^<>{}&\\s]([^<>{}&]*[^<>{}&\\s])?"
-              }
-            },
-            {
-              "type": "PREC",
-              "value": 1,
-              "content": {
-                "type": "PATTERN",
-                "value": "[{}]"
-              }
-            }
-          ]
-        }
-      }
-    },
-    "escaped_echo_statement": {
-      "type": "PREC",
-      "value": 3,
-      "content": {
-        "type": "SEQ",
-        "members": [
-          {
-            "type": "STRING",
-            "value": "{{"
-          },
-          {
-            "type": "SYMBOL",
-            "name": "text"
-          },
-          {
-            "type": "STRING",
-            "value": "}}"
-          }
-        ]
-      }
+      "type": "PATTERN",
+      "value": "[^<>&\\s]([^<>&]*[^<>&\\s])?"
     }
   },
   "extras": [
@@ -562,6 +514,26 @@
   "conflicts": [],
   "precedences": [],
   "externals": [
+    {
+      "type": "SYMBOL",
+      "name": "_escaped_echo_statement_start"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "_escaped_echo_statement_end"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "_not_escaped_echo_statement_start"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "_not_escaped_echo_statement_end"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "php_text"
+    },
     {
       "type": "SYMBOL",
       "name": "_start_tag_name"

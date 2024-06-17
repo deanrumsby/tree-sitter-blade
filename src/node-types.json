@@ -16,26 +16,11 @@
           "named": true
         },
         {
-          "type": "escaped_echo_statement",
+          "type": "echo_statement",
           "named": true
         },
         {
           "type": "quoted_attribute_value",
-          "named": true
-        }
-      ]
-    }
-  },
-  {
-    "type": "attribute_value",
-    "named": true,
-    "fields": {},
-    "children": {
-      "multiple": true,
-      "required": false,
-      "types": [
-        {
-          "type": "escaped_echo_statement",
           "named": true
         }
       ]
@@ -80,6 +65,25 @@
         },
         {
           "type": "text",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "echo_statement",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": false,
+      "required": true,
+      "types": [
+        {
+          "type": "escaped_echo_statement",
+          "named": true
+        },
+        {
+          "type": "not_escaped_echo_statement",
           "named": true
         }
       ]
@@ -175,7 +179,22 @@
       "required": true,
       "types": [
         {
-          "type": "text",
+          "type": "php_text",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "not_escaped_echo_statement",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": false,
+      "required": true,
+      "types": [
+        {
+          "type": "php_text",
           "named": true
         }
       ]
@@ -317,6 +336,10 @@
     "named": true
   },
   {
+    "type": "attribute_value",
+    "named": true
+  },
+  {
     "type": "comment",
     "named": true
   },
@@ -333,6 +356,10 @@
     "named": true
   },
   {
+    "type": "php_text",
+    "named": true
+  },
+  {
     "type": "raw_text",
     "named": true
   },
@@ -343,13 +370,5 @@
   {
     "type": "text",
     "named": true
-  },
-  {
-    "type": "{{",
-    "named": false
-  },
-  {
-    "type": "}}",
-    "named": false
   }
 ]

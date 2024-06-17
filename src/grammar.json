@@ -47,7 +47,7 @@
         },
         {
           "type": "SYMBOL",
-          "name": "not_escaped_echo_statement"
+          "name": "unescaped_echo_statement"
         }
       ]
     },
@@ -60,7 +60,7 @@
         },
         {
           "type": "SYMBOL",
-          "name": "php_text"
+          "name": "raw_text"
         },
         {
           "type": "SYMBOL",
@@ -68,20 +68,20 @@
         }
       ]
     },
-    "not_escaped_echo_statement": {
+    "unescaped_echo_statement": {
       "type": "SEQ",
       "members": [
         {
           "type": "SYMBOL",
-          "name": "_not_escaped_echo_statement_start"
+          "name": "_unescaped_echo_statement_start"
         },
         {
           "type": "SYMBOL",
-          "name": "php_text"
+          "name": "raw_text"
         },
         {
           "type": "SYMBOL",
-          "name": "_not_escaped_echo_statement_end"
+          "name": "_unescaped_echo_statement_end"
         }
       ]
     },
@@ -95,6 +95,10 @@
         {
           "type": "SYMBOL",
           "name": "entity"
+        },
+        {
+          "type": "SYMBOL",
+          "name": "echo_statement"
         },
         {
           "type": "SYMBOL",
@@ -375,10 +379,6 @@
       "type": "CHOICE",
       "members": [
         {
-          "type": "SYMBOL",
-          "name": "echo_statement"
-        },
-        {
           "type": "SEQ",
           "members": [
             {
@@ -524,15 +524,11 @@
     },
     {
       "type": "SYMBOL",
-      "name": "_not_escaped_echo_statement_start"
+      "name": "_unescaped_echo_statement_start"
     },
     {
       "type": "SYMBOL",
-      "name": "_not_escaped_echo_statement_end"
-    },
-    {
-      "type": "SYMBOL",
-      "name": "php_text"
+      "name": "_unescaped_echo_statement_end"
     },
     {
       "type": "SYMBOL",

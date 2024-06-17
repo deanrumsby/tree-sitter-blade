@@ -19,9 +19,8 @@ module.exports = grammar({
   externals: ($) => [
     $._escaped_echo_statement_start,
     $._escaped_echo_statement_end,
-    $._not_escaped_echo_statement_start,
-    $._not_escaped_echo_statement_end,
-    $.php_text,
+    $._unescaped_echo_statement_start,
+    $._unescaped_echo_statement_end,
     $._start_tag_name,
     $._script_start_tag_name,
     $._style_start_tag_name,
@@ -41,26 +40,27 @@ module.exports = grammar({
     _doctype: (_) => /[Dd][Oo][Cc][Tt][Yy][Pp][Ee]/,
 
     echo_statement: ($) =>
-      choice($.escaped_echo_statement, $.not_escaped_echo_statement),
+      choice($.escaped_echo_statement, $.unescaped_echo_statement),
 
     escaped_echo_statement: ($) =>
       seq(
         $._escaped_echo_statement_start,
-        $.php_text,
+        $.raw_text,
         $._escaped_echo_statement_end,
       ),
 
-    not_escaped_echo_statement: ($) =>
+    unescaped_echo_statement: ($) =>
       seq(
-        $._not_escaped_echo_statement_start,
-        $.php_text,
-        $._not_escaped_echo_statement_end,
+        $._unescaped_echo_statement_start,
+        $.raw_text,
+        $._unescaped_echo_statement_end,
       ),
 
     _node: ($) =>
       choice(
         $.doctype,
         $.entity,
+        $.echo_statement,
         $.text,
         $.element,
         $.script_element,
@@ -120,7 +120,6 @@ module.exports = grammar({
 
     attribute: ($) =>
       choice(
-        $.echo_statement,
         seq(
           $.attribute_name,
           optional(

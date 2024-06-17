@@ -1,0 +1,21 @@
+===================================
+Escaped echo statement
+===================================
+{{ "hello" }}
+---
+
+(document
+  (echo_statement
+    (escaped_echo_statement
+      (raw_text))))
+
+===================================
+Unescaped echo statement
+===================================
+{{!! "hello" !!}}
+---
+
+(document
+  (echo_statement
+    (unescaped_echo_statement
+      (raw_text))))

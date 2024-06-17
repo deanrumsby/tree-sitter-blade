@@ -1,5 +1,7 @@
+#include "delim.h"
 #include "tag.h"
 #include "tree_sitter/parser.h"
+#include <stdio.h>
 
 #include <wctype.h>
 
@@ -7,9 +9,8 @@ enum TokenType {
     // blade tokens
     ESCAPED_ECHO_START,
     ESCAPED_ECHO_END,
-    NOT_ESCAPED_ECHO_START,
-    NOT_ESCAPED_ECHO_END,
-    PHP_TEXT,
+    UNESCAPED_ECHO_START,
+    UNESCAPED_ECHO_END,
 
     // html tokens
     START_TAG_NAME,
@@ -25,6 +26,7 @@ enum TokenType {
 
 typedef struct {
     Array(Tag) tags;
+    RawTextDelimiter delim;
 } Scanner;
 
 #define MAX(a, b) ((a) > (b) ? (a) : (b))
@@ -41,6 +43,8 @@ static unsigned serialize(Scanner *scanner, char *buffer) {
     unsigned size = sizeof(tag_count);
     memcpy(&buffer[size], &tag_count, sizeof(tag_count));
     size += sizeof(tag_count);
+
+    buffer[size++] = (char)scanner->delim;
 
     for (; serialized_tag_count < tag_count; serialized_tag_count++) {
         Tag tag = scanner->tags.contents[serialized_tag_count];
@@ -86,6 +90,8 @@ static void deserialize(Scanner *scanner, const char *buffer, unsigned length) {
 
         memcpy(&tag_count, &buffer[size], sizeof(tag_count));
         size += sizeof(tag_count);
+
+        scanner->delim = (RawTextDelimiter)buffer[size++];
 
         array_reserve(&scanner->tags, tag_count);
         if (tag_count > 0) {
@@ -154,15 +160,9 @@ static bool scan_comment(TSLexer *lexer) {
 }
 
 static bool scan_raw_text(Scanner *scanner, TSLexer *lexer) {
-    if (scanner->tags.size == 0) {
-        return false;
-    }
+    const char *end_delimiter = DELIM_STRINGS[scanner->delim];
 
     lexer->mark_end(lexer);
-
-    const char *end_delimiter =
-        array_back(&scanner->tags)->type == SCRIPT ? "</SCRIPT" : "</STYLE";
-
     unsigned delimiter_index = 0;
     while (lexer->lookahead) {
         if (towupper(lexer->lookahead) == end_delimiter[delimiter_index]) {
@@ -254,9 +254,11 @@ static bool scan_start_tag_name(Scanner *scanner, TSLexer *lexer) {
     switch (tag.type) {
     case SCRIPT:
         lexer->result_symbol = SCRIPT_START_TAG_NAME;
+        scanner->delim = SCRIPT_TAG;
         break;
     case STYLE:
         lexer->result_symbol = STYLE_START_TAG_NAME;
+        scanner->delim = STYLE_TAG;
         break;
     default:
         lexer->result_symbol = START_TAG_NAME;
@@ -278,6 +280,10 @@ static bool scan_end_tag_name(Scanner *scanner, TSLexer *lexer) {
         pop_tag(scanner);
         lexer->result_symbol = END_TAG_NAME;
     } else {
+        printf("%d", array_back(&scanner->tags)->type);
+        printf(" -- ");
+        printf("%d", STYLE);
+        printf("\n");
         lexer->result_symbol = ERRONEOUS_END_TAG_NAME;
     }
 
@@ -300,6 +306,7 @@ static bool scan_self_closing_tag_delimiter(Scanner *scanner, TSLexer *lexer) {
 
 static bool scan_escaped_echo_start(Scanner *scanner, TSLexer *lexer) {
     lexer->result_symbol = ESCAPED_ECHO_START;
+    scanner->delim = ESCAPED_ECHO;
     return true;
 }
 
@@ -313,17 +320,18 @@ static bool scan_escaped_echo_end(Scanner *scanner, TSLexer *lexer) {
     return false;
 }
 
-static bool scan_not_escaped_echo_start(Scanner *scanner, TSLexer *lexer) {
+static bool scan_unescaped_echo_start(Scanner *scanner, TSLexer *lexer) {
     advance(lexer);
     if (lexer->lookahead == '!') {
         advance(lexer);
-        lexer->result_symbol = NOT_ESCAPED_ECHO_START;
+        lexer->result_symbol = UNESCAPED_ECHO_START;
+        scanner->delim = UNESCAPED_ECHO;
         return true;
     }
     return false;
 }
 
-static bool scan_not_escaped_echo_end(Scanner *scanner, TSLexer *lexer) {
+static bool scan_unescaped_echo_end(Scanner *scanner, TSLexer *lexer) {
     advance(lexer);
     const char *end = "!}}";
     for (int i = 0; i < 3; i++) {
@@ -332,38 +340,8 @@ static bool scan_not_escaped_echo_end(Scanner *scanner, TSLexer *lexer) {
         }
         advance(lexer);
     }
-    lexer->result_symbol = NOT_ESCAPED_ECHO_END;
-    return true;
-}
-
-static bool scan_php_text(Scanner *scanner, TSLexer *lexer) {
-    while (lexer->lookahead) {
-        char next = lexer->lookahead;
-        if (next != '}' && next != '!') {
-            advance(lexer);
-        } else {
-            lexer->mark_end(lexer);
-            advance(lexer);
-            char nexxt = lexer->lookahead;
-            if (next == '}' && nexxt == '}') {
-                advance(lexer);
-                break;
-            }
-            if (next == '!' && nexxt == '!') {
-                advance(lexer);
-                char nexxxt = lexer->lookahead;
-                if (nexxxt == '}') {
-                    advance(lexer);
-                    if (lexer->lookahead == '}') {
-                        advance(lexer);
-                        break;
-                    }
-                }
-            }
-            advance(lexer);
-        }
-    }
-    lexer->result_symbol = PHP_TEXT;
+    advance(lexer);
+    lexer->result_symbol = UNESCAPED_ECHO_END;
     return true;
 }
 
@@ -371,10 +349,6 @@ static bool scan(Scanner *scanner, TSLexer *lexer, const bool *valid_symbols) {
     if (valid_symbols[RAW_TEXT] && !valid_symbols[START_TAG_NAME] &&
         !valid_symbols[END_TAG_NAME]) {
         return scan_raw_text(scanner, lexer);
-    }
-
-    if (valid_symbols[PHP_TEXT]) {
-        return scan_php_text(scanner, lexer);
     }
 
     while (iswspace(lexer->lookahead)) {
@@ -410,12 +384,12 @@ static bool scan(Scanner *scanner, TSLexer *lexer, const bool *valid_symbols) {
 
     case '{':
         if (valid_symbols[ESCAPED_ECHO_START] ||
-            valid_symbols[NOT_ESCAPED_ECHO_START]) {
+            valid_symbols[UNESCAPED_ECHO_START]) {
             advance(lexer);
             if (lexer->lookahead == '{') {
                 advance(lexer);
                 if (lexer->lookahead == '!') {
-                    return scan_not_escaped_echo_start(scanner, lexer);
+                    return scan_unescaped_echo_start(scanner, lexer);
                 }
                 return scan_escaped_echo_start(scanner, lexer);
             }
@@ -423,8 +397,8 @@ static bool scan(Scanner *scanner, TSLexer *lexer, const bool *valid_symbols) {
         break;
 
     case '!':
-        if (valid_symbols[NOT_ESCAPED_ECHO_END]) {
-            return scan_not_escaped_echo_end(scanner, lexer);
+        if (valid_symbols[UNESCAPED_ECHO_END]) {
+            return scan_unescaped_echo_end(scanner, lexer);
         }
         break;
 

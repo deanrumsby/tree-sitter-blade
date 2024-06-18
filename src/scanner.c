@@ -23,6 +23,7 @@ enum TokenType {
     RAW_TEXT,
     TEXT,
     COMMENT,
+    TEST,
 };
 
 typedef struct {
@@ -337,7 +338,6 @@ static bool scan_unescaped_echo_end(Scanner *scanner, TSLexer *lexer) {
         }
         advance(lexer);
     }
-    advance(lexer);
     lexer->result_symbol = UNESCAPED_ECHO_END;
     return true;
 }
@@ -364,6 +364,10 @@ static bool scan_text(Scanner *scanner, TSLexer *lexer) {
             }
             break;
 
+        case 'T':
+            lexer->result_symbol = TEXT;
+            return true;
+
         case '<':
         case '>':
         case '&':
@@ -380,6 +384,12 @@ static bool scan_text(Scanner *scanner, TSLexer *lexer) {
     return true;
 }
 
+static bool scan_test(Scanner *scanner, TSLexer *lexer) {
+    lexer->result_symbol = TEST;
+    advance(lexer);
+    return true;
+}
+
 static bool scan(Scanner *scanner, TSLexer *lexer, const bool *valid_symbols) {
     if (valid_symbols[RAW_TEXT] && !valid_symbols[START_TAG_NAME] &&
         !valid_symbols[END_TAG_NAME]) {
@@ -391,6 +401,10 @@ static bool scan(Scanner *scanner, TSLexer *lexer, const bool *valid_symbols) {
     }
 
     switch (lexer->lookahead) {
+    case 'T':
+        return scan_test(scanner, lexer);
+        break;
+
     case '<':
         lexer->mark_end(lexer);
         advance(lexer);

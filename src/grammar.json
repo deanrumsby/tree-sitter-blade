@@ -239,8 +239,17 @@
         {
           "type": "REPEAT",
           "content": {
-            "type": "SYMBOL",
-            "name": "attribute"
+            "type": "CHOICE",
+            "members": [
+              {
+                "type": "SYMBOL",
+                "name": "attribute"
+              },
+              {
+                "type": "SYMBOL",
+                "name": "echo_statement"
+              }
+            ]
           }
         },
         {
@@ -268,8 +277,17 @@
         {
           "type": "REPEAT",
           "content": {
-            "type": "SYMBOL",
-            "name": "attribute"
+            "type": "CHOICE",
+            "members": [
+              {
+                "type": "SYMBOL",
+                "name": "attribute"
+              },
+              {
+                "type": "SYMBOL",
+                "name": "echo_statement"
+              }
+            ]
           }
         },
         {
@@ -297,8 +315,17 @@
         {
           "type": "REPEAT",
           "content": {
-            "type": "SYMBOL",
-            "name": "attribute"
+            "type": "CHOICE",
+            "members": [
+              {
+                "type": "SYMBOL",
+                "name": "attribute"
+              },
+              {
+                "type": "SYMBOL",
+                "name": "echo_statement"
+              }
+            ]
           }
         },
         {
@@ -326,8 +353,17 @@
         {
           "type": "REPEAT",
           "content": {
-            "type": "SYMBOL",
-            "name": "attribute"
+            "type": "CHOICE",
+            "members": [
+              {
+                "type": "SYMBOL",
+                "name": "attribute"
+              },
+              {
+                "type": "SYMBOL",
+                "name": "echo_statement"
+              }
+            ]
           }
         },
         {
@@ -424,8 +460,17 @@
       "value": "[^<>\"'/=\\s]+"
     },
     "attribute_value": {
-      "type": "PATTERN",
-      "value": "[^<>\"'=\\s]+"
+      "type": "CHOICE",
+      "members": [
+        {
+          "type": "SYMBOL",
+          "name": "echo_statement"
+        },
+        {
+          "type": "PATTERN",
+          "value": "[^<>\"'=\\s]+"
+        }
+      ]
     },
     "entity": {
       "type": "PATTERN",
@@ -500,6 +545,10 @@
   "extras": [
     {
       "type": "SYMBOL",
+      "name": "test"
+    },
+    {
+      "type": "SYMBOL",
       "name": "comment"
     },
     {
@@ -565,6 +614,10 @@
     {
       "type": "SYMBOL",
       "name": "comment"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "test"
     }
   ],
   "inline": [],

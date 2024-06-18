@@ -19,3 +19,28 @@ Unescaped echo statement
   (echo_statement
     (unescaped_echo_statement
       (raw_text))))
+
+===================================
+Escaped echo statement within text
+===================================
+Hello, {{ "world!" }}. This is a test.
+---
+
+(document
+  (text)
+  (echo_statement
+    (escaped_echo_statement
+      (raw_text)))
+  (text))
+
+======================================
+Unescaped echo statement within text
+======================================
+Hello, world. This is another {{!! "test." !!}}
+---
+
+(document
+  (text)
+  (echo_statement
+    (unescaped_echo_statement
+      (raw_text))))

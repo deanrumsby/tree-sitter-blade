@@ -495,10 +495,6 @@
           ]
         }
       ]
-    },
-    "text": {
-      "type": "PATTERN",
-      "value": "[^<>&\\s]([^<>&]*[^<>&\\s])?"
     }
   },
   "extras": [
@@ -561,6 +557,10 @@
     {
       "type": "SYMBOL",
       "name": "raw_text"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "text"
     },
     {
       "type": "SYMBOL",

@@ -29,6 +29,7 @@ module.exports = grammar({
     "/>",
     $._implicit_end_tag,
     $.raw_text,
+    $.text,
     $.comment,
   ],
 
@@ -142,7 +143,5 @@ module.exports = grammar({
         seq("'", optional(alias(/[^']+/, $.attribute_value)), "'"),
         seq('"', optional(alias(/[^"]+/, $.attribute_value)), '"'),
       ),
-
-    text: (_) => /[^<>&\s]([^<>&]*[^<>&\s])?/,
   },
 });

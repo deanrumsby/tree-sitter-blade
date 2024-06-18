@@ -21,6 +21,7 @@ enum TokenType {
     SELF_CLOSING_TAG_DELIMITER,
     IMPLICIT_END_TAG,
     RAW_TEXT,
+    TEXT,
     COMMENT,
 };
 
@@ -341,6 +342,44 @@ static bool scan_unescaped_echo_end(Scanner *scanner, TSLexer *lexer) {
     return true;
 }
 
+static bool scan_text(Scanner *scanner, TSLexer *lexer) {
+    if (lexer->eof(lexer)) {
+        return false;
+    }
+
+    // first character implies html entity which is handled
+    // by the grammar rules
+    if (lexer->lookahead == '&') {
+        return false;
+    }
+
+    while (lexer->lookahead) {
+        switch (lexer->lookahead) {
+        case '{':
+            lexer->mark_end(lexer);
+            advance(lexer);
+            if (lexer->lookahead == '{') {
+                lexer->result_symbol = TEXT;
+                return true;
+            }
+            break;
+
+        case '<':
+        case '>':
+        case '&':
+            lexer->result_symbol = TEXT;
+            return true;
+
+        default:
+            break;
+        }
+        advance(lexer);
+        lexer->mark_end(lexer);
+    }
+    lexer->result_symbol = TEXT;
+    return true;
+}
+
 static bool scan(Scanner *scanner, TSLexer *lexer, const bool *valid_symbols) {
     if (valid_symbols[RAW_TEXT] && !valid_symbols[START_TAG_NAME] &&
         !valid_symbols[END_TAG_NAME]) {
@@ -410,6 +449,10 @@ static bool scan(Scanner *scanner, TSLexer *lexer, const bool *valid_symbols) {
             return valid_symbols[START_TAG_NAME]
                        ? scan_start_tag_name(scanner, lexer)
                        : scan_end_tag_name(scanner, lexer);
+        }
+
+        if (valid_symbols[TEXT]) {
+            return scan_text(scanner, lexer);
         }
     }
 

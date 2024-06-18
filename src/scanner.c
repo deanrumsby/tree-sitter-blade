@@ -1,4 +1,3 @@
-#include "delim.h"
 #include "tag.h"
 #include "tree_sitter/parser.h"
 #include <stdio.h>
@@ -7,10 +6,8 @@
 
 enum TokenType {
     // blade tokens
-    ESCAPED_ECHO_START,
-    ESCAPED_ECHO_END,
-    UNESCAPED_ECHO_START,
-    UNESCAPED_ECHO_END,
+    ESCAPED_ECHO_STATEMENT,
+    UNESCAPED_ECHO_STATEMENT,
 
     // html tokens
     START_TAG_NAME,
@@ -23,12 +20,10 @@ enum TokenType {
     RAW_TEXT,
     TEXT,
     COMMENT,
-    TEST,
 };
 
 typedef struct {
     Array(Tag) tags;
-    RawTextDelimiter delim;
 } Scanner;
 
 #define MAX(a, b) ((a) > (b) ? (a) : (b))
@@ -45,8 +40,6 @@ static unsigned serialize(Scanner *scanner, char *buffer) {
     unsigned size = sizeof(tag_count);
     memcpy(&buffer[size], &tag_count, sizeof(tag_count));
     size += sizeof(tag_count);
-
-    buffer[size++] = (char)scanner->delim;
 
     for (; serialized_tag_count < tag_count; serialized_tag_count++) {
         Tag tag = scanner->tags.contents[serialized_tag_count];
@@ -92,8 +85,6 @@ static void deserialize(Scanner *scanner, const char *buffer, unsigned length) {
 
         memcpy(&tag_count, &buffer[size], sizeof(tag_count));
         size += sizeof(tag_count);
-
-        scanner->delim = (RawTextDelimiter)buffer[size++];
 
         array_reserve(&scanner->tags, tag_count);
         if (tag_count > 0) {
@@ -162,9 +153,15 @@ static bool scan_comment(TSLexer *lexer) {
 }
 
 static bool scan_raw_text(Scanner *scanner, TSLexer *lexer) {
-    const char *end_delimiter = DELIM_STRINGS[scanner->delim];
+    if (scanner->tags.size == 0) {
+        return false;
+    }
 
     lexer->mark_end(lexer);
+
+    const char *end_delimiter =
+        array_back(&scanner->tags)->type == SCRIPT ? "</SCRIPT" : "</STYLE";
+
     unsigned delimiter_index = 0;
     while (lexer->lookahead) {
         if (towupper(lexer->lookahead) == end_delimiter[delimiter_index]) {
@@ -256,11 +253,9 @@ static bool scan_start_tag_name(Scanner *scanner, TSLexer *lexer) {
     switch (tag.type) {
     case SCRIPT:
         lexer->result_symbol = SCRIPT_START_TAG_NAME;
-        scanner->delim = SCRIPT_TAG;
         break;
     case STYLE:
         lexer->result_symbol = STYLE_START_TAG_NAME;
-        scanner->delim = STYLE_TAG;
         break;
     default:
         lexer->result_symbol = START_TAG_NAME;
@@ -302,44 +297,48 @@ static bool scan_self_closing_tag_delimiter(Scanner *scanner, TSLexer *lexer) {
     return false;
 }
 
-static bool scan_escaped_echo_start(Scanner *scanner, TSLexer *lexer) {
-    lexer->result_symbol = ESCAPED_ECHO_START;
-    scanner->delim = ESCAPED_ECHO;
-    return true;
-}
-
-static bool scan_escaped_echo_end(Scanner *scanner, TSLexer *lexer) {
-    advance(lexer);
-    if (lexer->lookahead == '}') {
-        advance(lexer);
-        lexer->result_symbol = ESCAPED_ECHO_END;
-        return true;
+static bool scan_escaped_echo_statement(Scanner *scanner, TSLexer *lexer) {
+    if (lexer->eof(lexer)) {
+        return false;
     }
-    return false;
-}
-
-static bool scan_unescaped_echo_start(Scanner *scanner, TSLexer *lexer) {
-    advance(lexer);
-    if (lexer->lookahead == '!') {
-        advance(lexer);
-        lexer->result_symbol = UNESCAPED_ECHO_START;
-        scanner->delim = UNESCAPED_ECHO;
-        return true;
-    }
-    return false;
-}
-
-static bool scan_unescaped_echo_end(Scanner *scanner, TSLexer *lexer) {
-    advance(lexer);
-    const char *end = "!}}";
-    for (int i = 0; i < 3; i++) {
-        if (lexer->lookahead != end[i]) {
-            return false;
+    while (lexer->lookahead) {
+        if (lexer->lookahead == '}') {
+            advance(lexer);
+            if (lexer->lookahead == '}') {
+                advance(lexer);
+                lexer->mark_end(lexer);
+                lexer->result_symbol = ESCAPED_ECHO_STATEMENT;
+                return true;
+            }
         }
         advance(lexer);
     }
-    lexer->result_symbol = UNESCAPED_ECHO_END;
-    return true;
+    return false;
+}
+
+static bool scan_unescaped_echo_statement(Scanner *scanner, TSLexer *lexer) {
+    if (lexer->eof(lexer)) {
+        return false;
+    }
+    while (lexer->lookahead) {
+        if (lexer->lookahead == '!') {
+            advance(lexer);
+            if (lexer->lookahead == '!') {
+                advance(lexer);
+                if (lexer->lookahead == '}') {
+                    advance(lexer);
+                    if (lexer->lookahead == '}') {
+                        advance(lexer);
+                        lexer->mark_end(lexer);
+                        lexer->result_symbol = UNESCAPED_ECHO_STATEMENT;
+                        return true;
+                    }
+                }
+            }
+        }
+        advance(lexer);
+    }
+    return false;
 }
 
 static bool scan_text(Scanner *scanner, TSLexer *lexer) {
@@ -364,10 +363,6 @@ static bool scan_text(Scanner *scanner, TSLexer *lexer) {
             }
             break;
 
-        case 'T':
-            lexer->result_symbol = TEXT;
-            return true;
-
         case '<':
         case '>':
         case '&':
@@ -384,12 +379,6 @@ static bool scan_text(Scanner *scanner, TSLexer *lexer) {
     return true;
 }
 
-static bool scan_test(Scanner *scanner, TSLexer *lexer) {
-    lexer->result_symbol = TEST;
-    advance(lexer);
-    return true;
-}
-
 static bool scan(Scanner *scanner, TSLexer *lexer, const bool *valid_symbols) {
     if (valid_symbols[RAW_TEXT] && !valid_symbols[START_TAG_NAME] &&
         !valid_symbols[END_TAG_NAME]) {
@@ -401,10 +390,6 @@ static bool scan(Scanner *scanner, TSLexer *lexer, const bool *valid_symbols) {
     }
 
     switch (lexer->lookahead) {
-    case 'T':
-        return scan_test(scanner, lexer);
-        break;
-
     case '<':
         lexer->mark_end(lexer);
         advance(lexer);
@@ -432,28 +417,14 @@ static bool scan(Scanner *scanner, TSLexer *lexer, const bool *valid_symbols) {
         break;
 
     case '{':
-        if (valid_symbols[ESCAPED_ECHO_START] ||
-            valid_symbols[UNESCAPED_ECHO_START]) {
+        lexer->mark_end(lexer);
+        advance(lexer);
+        if (lexer->lookahead == '{') {
             advance(lexer);
-            if (lexer->lookahead == '{') {
-                advance(lexer);
-                if (lexer->lookahead == '!') {
-                    return scan_unescaped_echo_start(scanner, lexer);
-                }
-                return scan_escaped_echo_start(scanner, lexer);
+            if (lexer->lookahead == '!') {
+                return scan_unescaped_echo_statement(scanner, lexer);
             }
-        }
-        break;
-
-    case '!':
-        if (valid_symbols[UNESCAPED_ECHO_END]) {
-            return scan_unescaped_echo_end(scanner, lexer);
-        }
-        break;
-
-    case '}':
-        if (valid_symbols[ESCAPED_ECHO_END]) {
-            return scan_escaped_echo_end(scanner, lexer);
+            return scan_escaped_echo_statement(scanner, lexer);
         }
         break;
 
@@ -469,7 +440,6 @@ static bool scan(Scanner *scanner, TSLexer *lexer, const bool *valid_symbols) {
             return scan_text(scanner, lexer);
         }
     }
-
     return false;
 }
 

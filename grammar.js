@@ -14,13 +14,16 @@
 module.exports = grammar({
   name: "blade",
 
-  extras: ($) => [$.comment, /\s+/],
+  extras: ($) => [
+    $.escaped_echo_statement,
+    $.unescaped_echo_statement,
+    $.comment,
+    /\s+/,
+  ],
 
   externals: ($) => [
-    $._escaped_echo_statement_start,
-    $._escaped_echo_statement_end,
-    $._unescaped_echo_statement_start,
-    $._unescaped_echo_statement_end,
+    $.escaped_echo_statement,
+    $.unescaped_echo_statement,
     $._start_tag_name,
     $._script_start_tag_name,
     $._style_start_tag_name,
@@ -40,28 +43,10 @@ module.exports = grammar({
 
     _doctype: (_) => /[Dd][Oo][Cc][Tt][Yy][Pp][Ee]/,
 
-    echo_statement: ($) =>
-      choice($.escaped_echo_statement, $.unescaped_echo_statement),
-
-    escaped_echo_statement: ($) =>
-      seq(
-        $._escaped_echo_statement_start,
-        $.raw_text,
-        $._escaped_echo_statement_end,
-      ),
-
-    unescaped_echo_statement: ($) =>
-      seq(
-        $._unescaped_echo_statement_start,
-        $.raw_text,
-        $._unescaped_echo_statement_end,
-      ),
-
     _node: ($) =>
       choice(
         $.doctype,
         $.entity,
-        $.echo_statement,
         $.text,
         $.element,
         $.script_element,

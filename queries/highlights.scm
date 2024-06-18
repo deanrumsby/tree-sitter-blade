@@ -1,3 +1,5 @@
 ; inherits: html
 
-(echo_statement) @punctuation.special
+(escaped_echo_statement) @punctuation.special
+(unescaped_echo_statement) @punctuation.special
+

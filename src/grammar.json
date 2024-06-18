@@ -38,53 +38,6 @@
       "type": "PATTERN",
       "value": "[Dd][Oo][Cc][Tt][Yy][Pp][Ee]"
     },
-    "echo_statement": {
-      "type": "CHOICE",
-      "members": [
-        {
-          "type": "SYMBOL",
-          "name": "escaped_echo_statement"
-        },
-        {
-          "type": "SYMBOL",
-          "name": "unescaped_echo_statement"
-        }
-      ]
-    },
-    "escaped_echo_statement": {
-      "type": "SEQ",
-      "members": [
-        {
-          "type": "SYMBOL",
-          "name": "_escaped_echo_statement_start"
-        },
-        {
-          "type": "SYMBOL",
-          "name": "raw_text"
-        },
-        {
-          "type": "SYMBOL",
-          "name": "_escaped_echo_statement_end"
-        }
-      ]
-    },
-    "unescaped_echo_statement": {
-      "type": "SEQ",
-      "members": [
-        {
-          "type": "SYMBOL",
-          "name": "_unescaped_echo_statement_start"
-        },
-        {
-          "type": "SYMBOL",
-          "name": "raw_text"
-        },
-        {
-          "type": "SYMBOL",
-          "name": "_unescaped_echo_statement_end"
-        }
-      ]
-    },
     "_node": {
       "type": "CHOICE",
       "members": [
@@ -95,10 +48,6 @@
         {
           "type": "SYMBOL",
           "name": "entity"
-        },
-        {
-          "type": "SYMBOL",
-          "name": "echo_statement"
         },
         {
           "type": "SYMBOL",
@@ -239,17 +188,8 @@
         {
           "type": "REPEAT",
           "content": {
-            "type": "CHOICE",
-            "members": [
-              {
-                "type": "SYMBOL",
-                "name": "attribute"
-              },
-              {
-                "type": "SYMBOL",
-                "name": "echo_statement"
-              }
-            ]
+            "type": "SYMBOL",
+            "name": "attribute"
           }
         },
         {
@@ -277,17 +217,8 @@
         {
           "type": "REPEAT",
           "content": {
-            "type": "CHOICE",
-            "members": [
-              {
-                "type": "SYMBOL",
-                "name": "attribute"
-              },
-              {
-                "type": "SYMBOL",
-                "name": "echo_statement"
-              }
-            ]
+            "type": "SYMBOL",
+            "name": "attribute"
           }
         },
         {
@@ -315,17 +246,8 @@
         {
           "type": "REPEAT",
           "content": {
-            "type": "CHOICE",
-            "members": [
-              {
-                "type": "SYMBOL",
-                "name": "attribute"
-              },
-              {
-                "type": "SYMBOL",
-                "name": "echo_statement"
-              }
-            ]
+            "type": "SYMBOL",
+            "name": "attribute"
           }
         },
         {
@@ -353,17 +275,8 @@
         {
           "type": "REPEAT",
           "content": {
-            "type": "CHOICE",
-            "members": [
-              {
-                "type": "SYMBOL",
-                "name": "attribute"
-              },
-              {
-                "type": "SYMBOL",
-                "name": "echo_statement"
-              }
-            ]
+            "type": "SYMBOL",
+            "name": "attribute"
           }
         },
         {
@@ -460,17 +373,8 @@
       "value": "[^<>\"'/=\\s]+"
     },
     "attribute_value": {
-      "type": "CHOICE",
-      "members": [
-        {
-          "type": "SYMBOL",
-          "name": "echo_statement"
-        },
-        {
-          "type": "PATTERN",
-          "value": "[^<>\"'=\\s]+"
-        }
-      ]
+      "type": "PATTERN",
+      "value": "[^<>\"'=\\s]+"
     },
     "entity": {
       "type": "PATTERN",
@@ -545,7 +449,11 @@
   "extras": [
     {
       "type": "SYMBOL",
-      "name": "test"
+      "name": "escaped_echo_statement"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "unescaped_echo_statement"
     },
     {
       "type": "SYMBOL",
@@ -561,19 +469,11 @@
   "externals": [
     {
       "type": "SYMBOL",
-      "name": "_escaped_echo_statement_start"
+      "name": "escaped_echo_statement"
     },
     {
       "type": "SYMBOL",
-      "name": "_escaped_echo_statement_end"
-    },
-    {
-      "type": "SYMBOL",
-      "name": "_unescaped_echo_statement_start"
-    },
-    {
-      "type": "SYMBOL",
-      "name": "_unescaped_echo_statement_end"
+      "name": "unescaped_echo_statement"
     },
     {
       "type": "SYMBOL",
@@ -614,10 +514,6 @@
     {
       "type": "SYMBOL",
       "name": "comment"
-    },
-    {
-      "type": "SYMBOL",
-      "name": "test"
     }
   ],
   "inline": [],

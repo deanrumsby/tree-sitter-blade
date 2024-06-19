@@ -19,6 +19,7 @@ module.exports = grammar({
   externals: ($) => [
     $.escaped_php_text,
     $.unescaped_php_text,
+    $.argument_php_text,
     $._start_tag_name,
     $._script_start_tag_name,
     $._style_start_tag_name,
@@ -32,17 +33,20 @@ module.exports = grammar({
   ],
 
   rules: {
-    document: ($) => repeat($._node),
+    document: ($) => repeat(choice($._php_node, $._node)),
 
     doctype: ($) => seq("<!", alias($._doctype, "doctype"), /[^>]+/, ">"),
 
     _doctype: (_) => /[Dd][Oo][Cc][Tt][Yy][Pp][Ee]/,
 
+    word: (_) => /[a-zA-Z]+/,
+
+    _php_node: ($) => choice($.echo_statement, $.directive),
+
     _node: ($) =>
       choice(
         $.doctype,
         $.entity,
-        $.echo_statement,
         $.text,
         $.element,
         $.script_element,
@@ -50,7 +54,14 @@ module.exports = grammar({
         $.erroneous_end_tag,
       ),
 
-    // directive: ($) => seq('@', $._directive, optional(seq('(',
+    directive: ($) =>
+      seq(
+        "@",
+        $._directive,
+        optional(seq("(", alias($.argument_php_text, $.raw_text), ")")),
+      ),
+
+    _directive: (_) => choice("props", "if", "else", "endif"),
 
     echo_statement: ($) =>
       choice($.escaped_echo_statement, $.unescaped_echo_statement),

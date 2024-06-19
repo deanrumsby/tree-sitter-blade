@@ -4,8 +4,17 @@
     "document": {
       "type": "REPEAT",
       "content": {
-        "type": "SYMBOL",
-        "name": "_node"
+        "type": "CHOICE",
+        "members": [
+          {
+            "type": "SYMBOL",
+            "name": "_php_node"
+          },
+          {
+            "type": "SYMBOL",
+            "name": "_node"
+          }
+        ]
       }
     },
     "doctype": {
@@ -38,6 +47,23 @@
       "type": "PATTERN",
       "value": "[Dd][Oo][Cc][Tt][Yy][Pp][Ee]"
     },
+    "word": {
+      "type": "PATTERN",
+      "value": "[a-zA-Z]+"
+    },
+    "_php_node": {
+      "type": "CHOICE",
+      "members": [
+        {
+          "type": "SYMBOL",
+          "name": "echo_statement"
+        },
+        {
+          "type": "SYMBOL",
+          "name": "directive"
+        }
+      ]
+    },
     "_node": {
       "type": "CHOICE",
       "members": [
@@ -48,10 +74,6 @@
         {
           "type": "SYMBOL",
           "name": "entity"
-        },
-        {
-          "type": "SYMBOL",
-          "name": "echo_statement"
         },
         {
           "type": "SYMBOL",
@@ -72,6 +94,70 @@
         {
           "type": "SYMBOL",
           "name": "erroneous_end_tag"
+        }
+      ]
+    },
+    "directive": {
+      "type": "SEQ",
+      "members": [
+        {
+          "type": "STRING",
+          "value": "@"
+        },
+        {
+          "type": "SYMBOL",
+          "name": "_directive"
+        },
+        {
+          "type": "CHOICE",
+          "members": [
+            {
+              "type": "SEQ",
+              "members": [
+                {
+                  "type": "STRING",
+                  "value": "("
+                },
+                {
+                  "type": "ALIAS",
+                  "content": {
+                    "type": "SYMBOL",
+                    "name": "argument_php_text"
+                  },
+                  "named": true,
+                  "value": "raw_text"
+                },
+                {
+                  "type": "STRING",
+                  "value": ")"
+                }
+              ]
+            },
+            {
+              "type": "BLANK"
+            }
+          ]
+        }
+      ]
+    },
+    "_directive": {
+      "type": "CHOICE",
+      "members": [
+        {
+          "type": "STRING",
+          "value": "props"
+        },
+        {
+          "type": "STRING",
+          "value": "if"
+        },
+        {
+          "type": "STRING",
+          "value": "else"
+        },
+        {
+          "type": "STRING",
+          "value": "endif"
         }
       ]
     },
@@ -652,6 +738,10 @@
     {
       "type": "SYMBOL",
       "name": "unescaped_php_text"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "argument_php_text"
     },
     {
       "type": "SYMBOL",

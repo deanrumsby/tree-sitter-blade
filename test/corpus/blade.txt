@@ -77,3 +77,12 @@ Echo statement within quoted attribute value
     (text)
     (end_tag
       (tag_name))))
+
+===========================
+Directive without argument
+===========================
+@if
+---
+
+(document
+  (directive))

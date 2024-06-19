@@ -8,6 +8,7 @@ enum TokenType {
     // blade tokens
     ESCAPED_PHP_TEXT,
     UNESCAPED_PHP_TEXT,
+    ARGUMENT_PHP_TEXT,
 
     // html tokens
     START_TAG_NAME,
@@ -339,8 +340,6 @@ static bool scan_unescaped_php_text(Scanner *scanner, TSLexer *lexer) {
     return false;
 }
 
-// can probably return this to a regex rule within the grammar, will leave it
-// for now though
 static bool scan_text(Scanner *scanner, TSLexer *lexer) {
     if (lexer->eof(lexer)) {
         return false;
@@ -354,6 +353,16 @@ static bool scan_text(Scanner *scanner, TSLexer *lexer) {
             lexer->mark_end(lexer);
             advance(lexer);
             if (lexer->lookahead == '{') {
+                at_delim = true;
+            }
+            break;
+
+        case '@':
+            lexer->mark_end(lexer);
+            advance(lexer);
+            if (lexer->lookahead == '@') {
+                advance(lexer);
+            } else {
                 at_delim = true;
             }
             break;
@@ -378,7 +387,27 @@ static bool scan_text(Scanner *scanner, TSLexer *lexer) {
     return true;
 }
 
-static bool scan_php_text(Scanner *scanner, TSLexer *lexer) { return false; }
+static bool scan_argument_php_text(Scanner *scanner, TSLexer *lexer) {
+    if (lexer->eof(lexer)) {
+        return false;
+    }
+    int params = 0;
+    while (lexer->lookahead) {
+        char next = lexer->lookahead;
+        if (params == 0 && next == ')') {
+            lexer->result_symbol = ARGUMENT_PHP_TEXT;
+            return true;
+        }
+        if (next == '(') {
+            params++;
+        }
+        if (next == ')') {
+            params--;
+        }
+        advance(lexer);
+    }
+    return false;
+}
 
 static bool scan(Scanner *scanner, TSLexer *lexer, const bool *valid_symbols) {
     if (valid_symbols[ESCAPED_PHP_TEXT]) {
@@ -389,9 +418,9 @@ static bool scan(Scanner *scanner, TSLexer *lexer, const bool *valid_symbols) {
         return scan_unescaped_php_text(scanner, lexer);
     }
 
-    // if (valid_symbols[PHP_TEXT]) {
-    //     return scan_php_text(scanner, lexer);
-    // }
+    if (valid_symbols[ARGUMENT_PHP_TEXT]) {
+        return scan_argument_php_text(scanner, lexer);
+    }
 
     if (valid_symbols[RAW_TEXT] && !valid_symbols[START_TAG_NAME] &&
         !valid_symbols[END_TAG_NAME]) {

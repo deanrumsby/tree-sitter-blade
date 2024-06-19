@@ -2,4 +2,4 @@
 
 (escaped_echo_statement) @punctuation.special
 (unescaped_echo_statement) @punctuation.special
-
+(directive) @keyword.directive

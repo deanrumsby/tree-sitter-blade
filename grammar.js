@@ -17,8 +17,8 @@ module.exports = grammar({
   extras: ($) => [$.comment, /\s+/],
 
   externals: ($) => [
-    $.escaped_echo_statement,
-    $.unescaped_echo_statement,
+    $.escaped_php_text,
+    $.unescaped_php_text,
     $._single_quoted_attribute_value_fragment,
     $._double_quoted_attribute_value_fragment,
     $._start_tag_name,
@@ -52,8 +52,16 @@ module.exports = grammar({
         $.erroneous_end_tag,
       ),
 
+    // directive: ($) => seq('@', $._directive, optional(seq('(',
+
     echo_statement: ($) =>
       choice($.escaped_echo_statement, $.unescaped_echo_statement),
+
+    escaped_echo_statement: ($) =>
+      seq("{{", alias(optional($.escaped_php_text), $.raw_text), "}}"),
+
+    unescaped_echo_statement: ($) =>
+      seq("{{!!", alias(optional($.unescaped_php_text), $.raw_text), "!!}}"),
 
     element: ($) =>
       choice(

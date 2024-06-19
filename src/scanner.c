@@ -6,12 +6,12 @@
 
 enum TokenType {
     // blade tokens
-    ESCAPED_ECHO_STATEMENT,
-    UNESCAPED_ECHO_STATEMENT,
+    ESCAPED_PHP_TEXT,
+    UNESCAPED_PHP_TEXT,
 
     // html tokens
-    SINGLE_QUOTES_ATTRIBUTE_FRAG,
-    DOUBLE_QUOTES_ATTRIBUTE_FRAG,
+    SINGLE_QUOTES_ATTRIBUTE_VALUE_FRAGMENT,
+    DOUBLE_QUOTES_ATTRIBUTE_VALUE_FRAGMENT,
     START_TAG_NAME,
     SCRIPT_START_TAG_NAME,
     STYLE_START_TAG_NAME,
@@ -299,23 +299,16 @@ static bool scan_self_closing_tag_delimiter(Scanner *scanner, TSLexer *lexer) {
     return false;
 }
 
-static bool scan_escaped_echo_statement(Scanner *scanner, TSLexer *lexer) {
+static bool scan_escaped_php_text(Scanner *scanner, TSLexer *lexer) {
     if (lexer->eof(lexer)) {
         return false;
     }
     while (lexer->lookahead) {
-        if (lexer->lookahead == '{') {
-            advance(lexer);
-            if (lexer->lookahead == '{') {
-                return false;
-            }
-        }
         if (lexer->lookahead == '}') {
+            lexer->mark_end(lexer);
             advance(lexer);
             if (lexer->lookahead == '}') {
-                advance(lexer);
-                lexer->mark_end(lexer);
-                lexer->result_symbol = ESCAPED_ECHO_STATEMENT;
+                lexer->result_symbol = ESCAPED_PHP_TEXT;
                 return true;
             }
         }
@@ -324,27 +317,20 @@ static bool scan_escaped_echo_statement(Scanner *scanner, TSLexer *lexer) {
     return false;
 }
 
-static bool scan_unescaped_echo_statement(Scanner *scanner, TSLexer *lexer) {
+static bool scan_unescaped_php_text(Scanner *scanner, TSLexer *lexer) {
     if (lexer->eof(lexer)) {
         return false;
     }
     while (lexer->lookahead) {
-        if (lexer->lookahead == '{') {
-            advance(lexer);
-            if (lexer->lookahead == '{') {
-                return false;
-            }
-        }
         if (lexer->lookahead == '!') {
+            lexer->mark_end(lexer);
             advance(lexer);
             if (lexer->lookahead == '!') {
                 advance(lexer);
                 if (lexer->lookahead == '}') {
                     advance(lexer);
                     if (lexer->lookahead == '}') {
-                        advance(lexer);
-                        lexer->mark_end(lexer);
-                        lexer->result_symbol = UNESCAPED_ECHO_STATEMENT;
+                        lexer->result_symbol = UNESCAPED_PHP_TEXT;
                         return true;
                     }
                 }
@@ -392,8 +378,8 @@ static bool scan_text(Scanner *scanner, TSLexer *lexer) {
     return true;
 }
 
-static bool scan_quoted_attribute_value_frag(Scanner *scanner, TSLexer *lexer,
-                                             char delim) {
+static bool scan_quoted_attribute_value_fragment(Scanner *scanner,
+                                                 TSLexer *lexer, char delim) {
 
     bool zero_width = true;
     while (lexer->lookahead) {
@@ -416,14 +402,28 @@ static bool scan_quoted_attribute_value_frag(Scanner *scanner, TSLexer *lexer,
         return false;
     }
     if (delim == '\'') {
-        lexer->result_symbol = SINGLE_QUOTES_ATTRIBUTE_FRAG;
+        lexer->result_symbol = SINGLE_QUOTES_ATTRIBUTE_VALUE_FRAGMENT;
     } else {
-        lexer->result_symbol = DOUBLE_QUOTES_ATTRIBUTE_FRAG;
+        lexer->result_symbol = DOUBLE_QUOTES_ATTRIBUTE_VALUE_FRAGMENT;
     }
     return true;
 }
 
+static bool scan_php_text(Scanner *scanner, TSLexer *lexer) { return false; }
+
 static bool scan(Scanner *scanner, TSLexer *lexer, const bool *valid_symbols) {
+    if (valid_symbols[ESCAPED_PHP_TEXT]) {
+        return scan_escaped_php_text(scanner, lexer);
+    }
+
+    if (valid_symbols[UNESCAPED_PHP_TEXT]) {
+        return scan_unescaped_php_text(scanner, lexer);
+    }
+
+    // if (valid_symbols[PHP_TEXT]) {
+    //     return scan_php_text(scanner, lexer);
+    // }
+
     if (valid_symbols[RAW_TEXT] && !valid_symbols[START_TAG_NAME] &&
         !valid_symbols[END_TAG_NAME]) {
         return scan_raw_text(scanner, lexer);
@@ -460,18 +460,6 @@ static bool scan(Scanner *scanner, TSLexer *lexer, const bool *valid_symbols) {
         }
         break;
 
-    case '{':
-        lexer->mark_end(lexer);
-        advance(lexer);
-        if (lexer->lookahead == '{') {
-            advance(lexer);
-            if (lexer->lookahead == '!') {
-                return scan_unescaped_echo_statement(scanner, lexer);
-            }
-            return scan_escaped_echo_statement(scanner, lexer);
-        }
-        break;
-
     default:
         if ((valid_symbols[START_TAG_NAME] || valid_symbols[END_TAG_NAME]) &&
             !valid_symbols[RAW_TEXT]) {
@@ -481,11 +469,11 @@ static bool scan(Scanner *scanner, TSLexer *lexer, const bool *valid_symbols) {
         }
 
         if (valid_symbols[SINGLE_QUOTES_ATTRIBUTE_FRAG]) {
-            return scan_quoted_attribute_value_frag(scanner, lexer, '\'');
+            return scan_quoted_attribute_value_fragment(scanner, lexer, '\'');
         }
 
         if (valid_symbols[DOUBLE_QUOTES_ATTRIBUTE_FRAG]) {
-            return scan_quoted_attribute_value_frag(scanner, lexer, '"');
+            return scan_quoted_attribute_value_fragment(scanner, lexer, '"');
         }
 
         if (valid_symbols[TEXT]) {

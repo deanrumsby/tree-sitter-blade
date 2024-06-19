@@ -6,7 +6,8 @@ Escaped echo statement
 
 (document
   (echo_statement
-    (escaped_echo_statement)))
+    (escaped_echo_statement
+      (raw_text))))
 
 ===================================
 Unescaped echo statement
@@ -16,7 +17,8 @@ Unescaped echo statement
 
 (document
   (echo_statement
-    (unescaped_echo_statement)))
+    (unescaped_echo_statement
+      (raw_text))))
 
 =============================================
 Echo statement as attribute value
@@ -32,7 +34,8 @@ Echo statement as attribute value
         (attribute_name)
         (attribute_value
           (echo_statement
-            (escaped_echo_statement)))))
+            (escaped_echo_statement
+              (raw_text))))))
     (text)
     (end_tag
       (tag_name))))
@@ -52,7 +55,8 @@ Echo statement within quoted attribute value
         (quoted_attribute_value
           (attribute_value
             (echo_statement
-              (unescaped_echo_statement))))))
+              (unescaped_echo_statement
+                (raw_text)))))))
     (text)
     (end_tag
       (tag_name))))

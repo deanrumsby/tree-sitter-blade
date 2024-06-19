@@ -9,6 +9,7 @@ enum TokenType {
     ESCAPED_PHP_TEXT,
     UNESCAPED_PHP_TEXT,
     ARGUMENT_PHP_TEXT,
+    DIRECTIVE_ARG_OPENING,
 
     // html tokens
     START_TAG_NAME,
@@ -298,6 +299,12 @@ static bool scan_self_closing_tag_delimiter(Scanner *scanner, TSLexer *lexer) {
     return false;
 }
 
+static bool scan_directive_arg_opening(Scanner *scanner, TSLexer *lexer) {
+    advance(lexer);
+    lexer->result_symbol = DIRECTIVE_ARG_OPENING;
+    return true;
+}
+
 static bool scan_escaped_php_text(Scanner *scanner, TSLexer *lexer) {
     if (lexer->eof(lexer)) {
         return false;
@@ -354,6 +361,8 @@ static bool scan_text(Scanner *scanner, TSLexer *lexer) {
             advance(lexer);
             if (lexer->lookahead == '{') {
                 at_delim = true;
+            } else {
+                zero_width = false;
             }
             break;
 
@@ -361,6 +370,7 @@ static bool scan_text(Scanner *scanner, TSLexer *lexer) {
             lexer->mark_end(lexer);
             advance(lexer);
             if (lexer->lookahead == '@') {
+                zero_width = false;
                 advance(lexer);
             } else {
                 at_delim = true;
@@ -376,7 +386,6 @@ static bool scan_text(Scanner *scanner, TSLexer *lexer) {
         default:
             advance(lexer);
             zero_width = false;
-            lexer->mark_end(lexer);
             break;
         }
     }
@@ -452,6 +461,12 @@ static bool scan(Scanner *scanner, TSLexer *lexer, const bool *valid_symbols) {
         }
         break;
 
+    case '(':
+        if (valid_symbols[DIRECTIVE_ARG_OPENING]) {
+            return scan_directive_arg_opening(scanner, lexer);
+        }
+        break;
+
     case '/':
         if (valid_symbols[SELF_CLOSING_TAG_DELIMITER]) {
             return scan_self_closing_tag_delimiter(scanner, lexer);
@@ -466,7 +481,7 @@ static bool scan(Scanner *scanner, TSLexer *lexer, const bool *valid_symbols) {
                        : scan_end_tag_name(scanner, lexer);
         }
 
-        if (valid_symbols[TEXT]) {
+        if (valid_symbols[TEXT] && !valid_symbols[DIRECTIVE_ARG_OPENING]) {
             return scan_text(scanner, lexer);
         }
     }

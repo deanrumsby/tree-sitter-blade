@@ -20,6 +20,7 @@ module.exports = grammar({
     $.escaped_php_text,
     $.unescaped_php_text,
     $.argument_php_text,
+    "(",
     $._start_tag_name,
     $._script_start_tag_name,
     $._style_start_tag_name,
@@ -33,7 +34,7 @@ module.exports = grammar({
   ],
 
   rules: {
-    document: ($) => repeat(choice($._php_node, $._node)),
+    document: ($) => repeat(choice($._blade_node, $._node)),
 
     doctype: ($) => seq("<!", alias($._doctype, "doctype"), /[^>]+/, ">"),
 
@@ -41,7 +42,7 @@ module.exports = grammar({
 
     word: (_) => /[a-zA-Z]+/,
 
-    _php_node: ($) => choice($.echo_statement, $.directive),
+    _blade_node: ($) => choice($.echo_statement, $.directive),
 
     _node: ($) =>
       choice(
@@ -55,13 +56,11 @@ module.exports = grammar({
       ),
 
     directive: ($) =>
-      seq(
-        "@",
-        $._directive,
-        optional(seq("(", alias($.argument_php_text, $.raw_text), ")")),
-      ),
+      seq("@", $._directive, optional(seq("(", $.directive_argument, ")"))),
 
     _directive: (_) => choice("props", "if", "else", "endif"),
+
+    directive_argument: ($) => alias($.argument_php_text, $.raw_text),
 
     echo_statement: ($) =>
       choice($.escaped_echo_statement, $.unescaped_echo_statement),
@@ -76,7 +75,7 @@ module.exports = grammar({
       choice(
         seq(
           $.start_tag,
-          repeat($._node),
+          repeat(choice($._blade_node, $._node)),
           choice($.end_tag, $._implicit_end_tag),
         ),
         $.self_closing_tag,

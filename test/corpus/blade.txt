@@ -20,6 +20,22 @@ Unescaped echo statement
     (unescaped_echo_statement
       (raw_text))))
 
+===================================
+Echo statement within tags
+===================================
+<button>{{ "hello" }}</button>
+---
+
+(document
+  (element
+    (start_tag
+      (tag_name))
+    (echo_statement
+      (escaped_echo_statement
+        (raw_text)))
+    (end_tag
+      (tag_name))))
+
 =============================
 Echo statement as attribute
 =============================
@@ -86,3 +102,14 @@ Directive without argument
 
 (document
   (directive))
+
+===========================
+Directive with argument
+===========================
+@props(['active' => false])
+---
+
+(document
+  (directive
+    (directive_argument
+      (raw_text))))

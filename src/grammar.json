@@ -8,7 +8,7 @@
         "members": [
           {
             "type": "SYMBOL",
-            "name": "_php_node"
+            "name": "_blade_node"
           },
           {
             "type": "SYMBOL",
@@ -51,7 +51,7 @@
       "type": "PATTERN",
       "value": "[a-zA-Z]+"
     },
-    "_php_node": {
+    "_blade_node": {
       "type": "CHOICE",
       "members": [
         {
@@ -119,13 +119,8 @@
                   "value": "("
                 },
                 {
-                  "type": "ALIAS",
-                  "content": {
-                    "type": "SYMBOL",
-                    "name": "argument_php_text"
-                  },
-                  "named": true,
-                  "value": "raw_text"
+                  "type": "SYMBOL",
+                  "name": "directive_argument"
                 },
                 {
                   "type": "STRING",
@@ -160,6 +155,15 @@
           "value": "endif"
         }
       ]
+    },
+    "directive_argument": {
+      "type": "ALIAS",
+      "content": {
+        "type": "SYMBOL",
+        "name": "argument_php_text"
+      },
+      "named": true,
+      "value": "raw_text"
     },
     "echo_statement": {
       "type": "CHOICE",
@@ -247,8 +251,17 @@
             {
               "type": "REPEAT",
               "content": {
-                "type": "SYMBOL",
-                "name": "_node"
+                "type": "CHOICE",
+                "members": [
+                  {
+                    "type": "SYMBOL",
+                    "name": "_blade_node"
+                  },
+                  {
+                    "type": "SYMBOL",
+                    "name": "_node"
+                  }
+                ]
               }
             },
             {
@@ -742,6 +755,10 @@
     {
       "type": "SYMBOL",
       "name": "argument_php_text"
+    },
+    {
+      "type": "STRING",
+      "value": "("
     },
     {
       "type": "SYMBOL",

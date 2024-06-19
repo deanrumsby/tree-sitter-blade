@@ -304,6 +304,12 @@ static bool scan_escaped_echo_statement(Scanner *scanner, TSLexer *lexer) {
         return false;
     }
     while (lexer->lookahead) {
+        if (lexer->lookahead == '{') {
+            advance(lexer);
+            if (lexer->lookahead == '{') {
+                return false;
+            }
+        }
         if (lexer->lookahead == '}') {
             advance(lexer);
             if (lexer->lookahead == '}') {
@@ -323,6 +329,12 @@ static bool scan_unescaped_echo_statement(Scanner *scanner, TSLexer *lexer) {
         return false;
     }
     while (lexer->lookahead) {
+        if (lexer->lookahead == '{') {
+            advance(lexer);
+            if (lexer->lookahead == '{') {
+                return false;
+            }
+        }
         if (lexer->lookahead == '!') {
             advance(lexer);
             if (lexer->lookahead == '!') {
@@ -348,34 +360,33 @@ static bool scan_text(Scanner *scanner, TSLexer *lexer) {
         return false;
     }
 
-    // first character implies html entity which is handled
-    // by the grammar rules
-    if (lexer->lookahead == '&') {
-        return false;
-    }
-
-    while (lexer->lookahead) {
+    bool zero_width = true;
+    bool at_delim = false;
+    while (!at_delim && lexer->lookahead) {
         switch (lexer->lookahead) {
         case '{':
             lexer->mark_end(lexer);
             advance(lexer);
             if (lexer->lookahead == '{') {
-                lexer->result_symbol = TEXT;
-                return true;
+                at_delim = true;
             }
             break;
 
         case '<':
         case '>':
         case '&':
-            lexer->result_symbol = TEXT;
-            return true;
+            at_delim = true;
+            break;
 
         default:
+            advance(lexer);
+            zero_width = false;
+            lexer->mark_end(lexer);
             break;
         }
-        advance(lexer);
-        lexer->mark_end(lexer);
+    }
+    if (zero_width) {
+        return false;
     }
     lexer->result_symbol = TEXT;
     return true;

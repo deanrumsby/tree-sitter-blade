@@ -51,6 +51,10 @@
         },
         {
           "type": "SYMBOL",
+          "name": "echo_statement"
+        },
+        {
+          "type": "SYMBOL",
           "name": "text"
         },
         {
@@ -501,14 +505,6 @@
     }
   },
   "extras": [
-    {
-      "type": "SYMBOL",
-      "name": "escaped_echo_statement"
-    },
-    {
-      "type": "SYMBOL",
-      "name": "unescaped_echo_statement"
-    },
     {
       "type": "SYMBOL",
       "name": "comment"

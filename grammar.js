@@ -14,12 +14,7 @@
 module.exports = grammar({
   name: "blade",
 
-  extras: ($) => [
-    $.escaped_echo_statement,
-    $.unescaped_echo_statement,
-    $.comment,
-    /\s+/,
-  ],
+  extras: ($) => [$.comment, /\s+/],
 
   externals: ($) => [
     $.escaped_echo_statement,
@@ -49,6 +44,7 @@ module.exports = grammar({
       choice(
         $.doctype,
         $.entity,
+        $.echo_statement,
         $.text,
         $.element,
         $.script_element,

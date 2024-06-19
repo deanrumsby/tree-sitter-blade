@@ -5,7 +5,8 @@ Escaped echo statement
 ---
 
 (document
-  (escaped_echo_statement))
+  (echo_statement
+    (escaped_echo_statement)))
 
 ===================================
 Unescaped echo statement
@@ -14,7 +15,8 @@ Unescaped echo statement
 ---
 
 (document
-  (unescaped_echo_statement))
+  (echo_statement
+    (unescaped_echo_statement)))
 
 =============================================
 Echo statement as attribute value

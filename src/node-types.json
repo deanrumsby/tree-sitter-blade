@@ -55,6 +55,10 @@
           "named": true
         },
         {
+          "type": "echo_statement",
+          "named": true
+        },
+        {
           "type": "element",
           "named": true
         },
@@ -110,6 +114,10 @@
       "types": [
         {
           "type": "doctype",
+          "named": true
+        },
+        {
+          "type": "echo_statement",
           "named": true
         },
         {

@@ -9,6 +9,7 @@ enum TokenType {
     ESCAPED_PHP_TEXT,
     UNESCAPED_PHP_TEXT,
     ARGUMENT_PHP_TEXT,
+    DIRECTIVE_START,
     DIRECTIVE_ARG_OPENING,
 
     // html tokens
@@ -366,17 +367,6 @@ static bool scan_text(Scanner *scanner, TSLexer *lexer) {
             }
             break;
 
-        case '@':
-            lexer->mark_end(lexer);
-            advance(lexer);
-            if (lexer->lookahead == '@') {
-                zero_width = false;
-                advance(lexer);
-            } else {
-                at_delim = true;
-            }
-            break;
-
         case '<':
         case '>':
         case '&':
@@ -481,7 +471,9 @@ static bool scan(Scanner *scanner, TSLexer *lexer, const bool *valid_symbols) {
                        : scan_end_tag_name(scanner, lexer);
         }
 
-        if (valid_symbols[TEXT] && !valid_symbols[DIRECTIVE_ARG_OPENING]) {
+        if (valid_symbols[TEXT] &&
+            !(lexer->lookahead == '@' && valid_symbols[DIRECTIVE_START]) &&
+            !valid_symbols[DIRECTIVE_ARG_OPENING]) {
             return scan_text(scanner, lexer);
         }
     }

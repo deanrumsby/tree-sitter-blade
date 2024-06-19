@@ -10,7 +10,7 @@
 #define SYMBOL_COUNT 66
 #define ALIAS_COUNT 0
 #define TOKEN_COUNT 40
-#define EXTERNAL_TOKEN_COUNT 14
+#define EXTERNAL_TOKEN_COUNT 15
 #define FIELD_COUNT 0
 #define MAX_ALIAS_SEQUENCE_LENGTH 5
 #define PRODUCTION_ID_COUNT 2
@@ -3970,23 +3970,25 @@ enum ts_external_scanner_symbol_identifiers {
   ts_external_token_escaped_php_text = 0,
   ts_external_token_unescaped_php_text = 1,
   ts_external_token_argument_php_text = 2,
-  ts_external_token_LPAREN = 3,
-  ts_external_token__start_tag_name = 4,
-  ts_external_token__script_start_tag_name = 5,
-  ts_external_token__style_start_tag_name = 6,
-  ts_external_token__end_tag_name = 7,
-  ts_external_token_erroneous_end_tag_name = 8,
-  ts_external_token_SLASH_GT = 9,
-  ts_external_token__implicit_end_tag = 10,
-  ts_external_token_raw_text = 11,
-  ts_external_token_text = 12,
-  ts_external_token_comment = 13,
+  ts_external_token_AT = 3,
+  ts_external_token_LPAREN = 4,
+  ts_external_token__start_tag_name = 5,
+  ts_external_token__script_start_tag_name = 6,
+  ts_external_token__style_start_tag_name = 7,
+  ts_external_token__end_tag_name = 8,
+  ts_external_token_erroneous_end_tag_name = 9,
+  ts_external_token_SLASH_GT = 10,
+  ts_external_token__implicit_end_tag = 11,
+  ts_external_token_raw_text = 12,
+  ts_external_token_text = 13,
+  ts_external_token_comment = 14,
 };
 
 static const TSSymbol ts_external_scanner_symbol_map[EXTERNAL_TOKEN_COUNT] = {
   [ts_external_token_escaped_php_text] = sym_escaped_php_text,
   [ts_external_token_unescaped_php_text] = sym_unescaped_php_text,
   [ts_external_token_argument_php_text] = sym_argument_php_text,
+  [ts_external_token_AT] = anon_sym_AT,
   [ts_external_token_LPAREN] = anon_sym_LPAREN,
   [ts_external_token__start_tag_name] = sym__start_tag_name,
   [ts_external_token__script_start_tag_name] = sym__script_start_tag_name,
@@ -4005,6 +4007,7 @@ static const bool ts_external_scanner_states[16][EXTERNAL_TOKEN_COUNT] = {
     [ts_external_token_escaped_php_text] = true,
     [ts_external_token_unescaped_php_text] = true,
     [ts_external_token_argument_php_text] = true,
+    [ts_external_token_AT] = true,
     [ts_external_token_LPAREN] = true,
     [ts_external_token__start_tag_name] = true,
     [ts_external_token__script_start_tag_name] = true,
@@ -4018,10 +4021,12 @@ static const bool ts_external_scanner_states[16][EXTERNAL_TOKEN_COUNT] = {
     [ts_external_token_comment] = true,
   },
   [2] = {
+    [ts_external_token_AT] = true,
     [ts_external_token_text] = true,
     [ts_external_token_comment] = true,
   },
   [3] = {
+    [ts_external_token_AT] = true,
     [ts_external_token__implicit_end_tag] = true,
     [ts_external_token_text] = true,
     [ts_external_token_comment] = true,
@@ -4034,12 +4039,14 @@ static const bool ts_external_scanner_states[16][EXTERNAL_TOKEN_COUNT] = {
     [ts_external_token_comment] = true,
   },
   [6] = {
+    [ts_external_token_AT] = true,
     [ts_external_token_LPAREN] = true,
     [ts_external_token__implicit_end_tag] = true,
     [ts_external_token_text] = true,
     [ts_external_token_comment] = true,
   },
   [7] = {
+    [ts_external_token_AT] = true,
     [ts_external_token_LPAREN] = true,
     [ts_external_token_text] = true,
     [ts_external_token_comment] = true,

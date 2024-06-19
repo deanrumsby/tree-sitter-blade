@@ -20,6 +20,7 @@ module.exports = grammar({
     $.escaped_php_text,
     $.unescaped_php_text,
     $.argument_php_text,
+    "@",
     "(",
     $._start_tag_name,
     $._script_start_tag_name,

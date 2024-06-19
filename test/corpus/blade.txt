@@ -113,3 +113,22 @@ Directive with argument
   (directive
     (directive_argument
       (raw_text))))
+
+===========================
+Expression attributes
+===========================
+<x-nav-link :active="request()->is('/')">Home</x-nav-link>
+---
+
+(document
+  (element
+    (start_tag
+      (tag_name)
+      (attribute
+        (expression_attribute
+          (attribute_name)
+          (quoted_attribute_value
+            (attribute_value)))))
+    (text)
+    (end_tag
+      (tag_name))))

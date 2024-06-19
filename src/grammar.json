@@ -540,6 +540,10 @@
       "type": "CHOICE",
       "members": [
         {
+          "type": "SYMBOL",
+          "name": "expression_attribute"
+        },
+        {
           "type": "SEQ",
           "members": [
             {
@@ -575,6 +579,94 @@
                   "type": "BLANK"
                 }
               ]
+            }
+          ]
+        }
+      ]
+    },
+    "expression_attribute": {
+      "type": "SEQ",
+      "members": [
+        {
+          "type": "ALIAS",
+          "content": {
+            "type": "TOKEN",
+            "content": {
+              "type": "SEQ",
+              "members": [
+                {
+                  "type": "STRING",
+                  "value": ":"
+                },
+                {
+                  "type": "PATTERN",
+                  "value": "[^:<>\"'/=\\s][^<>\"'/=\\s]*"
+                }
+              ]
+            }
+          },
+          "named": true,
+          "value": "attribute_name"
+        },
+        {
+          "type": "STRING",
+          "value": "="
+        },
+        {
+          "type": "ALIAS",
+          "content": {
+            "type": "SYMBOL",
+            "name": "_expression_attribute_value"
+          },
+          "named": true,
+          "value": "quoted_attribute_value"
+        }
+      ]
+    },
+    "_expression_attribute_value": {
+      "type": "CHOICE",
+      "members": [
+        {
+          "type": "SEQ",
+          "members": [
+            {
+              "type": "STRING",
+              "value": "'"
+            },
+            {
+              "type": "ALIAS",
+              "content": {
+                "type": "PATTERN",
+                "value": "[^']+"
+              },
+              "named": true,
+              "value": "attribute_value"
+            },
+            {
+              "type": "STRING",
+              "value": "'"
+            }
+          ]
+        },
+        {
+          "type": "SEQ",
+          "members": [
+            {
+              "type": "STRING",
+              "value": "\""
+            },
+            {
+              "type": "ALIAS",
+              "content": {
+                "type": "PATTERN",
+                "value": "[^\"]+"
+              },
+              "named": true,
+              "value": "attribute_value"
+            },
+            {
+              "type": "STRING",
+              "value": "\""
             }
           ]
         }

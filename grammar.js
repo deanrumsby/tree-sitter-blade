@@ -134,12 +134,26 @@ module.exports = grammar({
 
     attribute: ($) =>
       choice(
+        $.expression_attribute,
         seq(
           $.attribute_name,
           optional(
             seq("=", choice($.attribute_value, $.quoted_attribute_value)),
           ),
         ),
+      ),
+
+    expression_attribute: ($) =>
+      seq(
+        alias(token(seq(":", /[^:<>"'/=\s][^<>"'/=\s]*/)), $.attribute_name),
+        "=",
+        alias($._expression_attribute_value, $.quoted_attribute_value),
+      ),
+
+    _expression_attribute_value: ($) =>
+      choice(
+        seq("'", alias(/[^']+/, $.attribute_value), "'"),
+        seq('"', alias(/[^"]+/, $.attribute_value), '"'),
       ),
 
     attribute_name: (_) => /[^<>"'/=\s]+/,

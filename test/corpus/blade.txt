@@ -20,6 +20,23 @@ Unescaped echo statement
     (unescaped_echo_statement
       (raw_text))))
 
+=============================
+Echo statement as attribute
+=============================
+<button {{ $attributes }}>Test</button>
+---
+
+(document
+  (element
+    (start_tag
+      (tag_name)
+      (echo_statement
+        (escaped_echo_statement
+          (raw_text))))
+    (text)
+    (end_tag
+      (tag_name))))
+
 =============================================
 Echo statement as attribute value
 =============================================

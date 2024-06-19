@@ -19,8 +19,6 @@ module.exports = grammar({
   externals: ($) => [
     $.escaped_php_text,
     $.unescaped_php_text,
-    $._single_quoted_attribute_value_fragment,
-    $._double_quoted_attribute_value_fragment,
     $._start_tag_name,
     $._script_start_tag_name,
     $._style_start_tag_name,
@@ -88,13 +86,18 @@ module.exports = grammar({
       ),
 
     start_tag: ($) =>
-      seq("<", alias($._start_tag_name, $.tag_name), repeat($.attribute), ">"),
+      seq(
+        "<",
+        alias($._start_tag_name, $.tag_name),
+        repeat(choice($.attribute, $.echo_statement)),
+        ">",
+      ),
 
     script_start_tag: ($) =>
       seq(
         "<",
         alias($._script_start_tag_name, $.tag_name),
-        repeat($.attribute),
+        repeat(choice($.attribute, $.echo_statement)),
         ">",
       ),
 
@@ -102,12 +105,17 @@ module.exports = grammar({
       seq(
         "<",
         alias($._style_start_tag_name, $.tag_name),
-        repeat($.attribute),
+        repeat(choice($.attribute, $.echo_statement)),
         ">",
       ),
 
     self_closing_tag: ($) =>
-      seq("<", alias($._start_tag_name, $.tag_name), repeat($.attribute), "/>"),
+      seq(
+        "<",
+        alias($._start_tag_name, $.tag_name),
+        repeat(choice($.attribute, $.echo_statement)),
+        "/>",
+      ),
 
     end_tag: ($) => seq("</", alias($._end_tag_name, $.tag_name), ">"),
 
@@ -150,12 +158,12 @@ module.exports = grammar({
     // any child echo statement in the AST
     _single_quotes_attribute_value: ($) =>
       repeat1(
-        choice($._single_quoted_attribute_value_fragment, $.echo_statement),
+        choice(prec(2, /[^'{]+/), prec(1, $.echo_statement), prec(0, "{")),
       ),
 
     _double_quotes_attribute_value: ($) =>
       repeat1(
-        choice($._double_quoted_attribute_value_fragment, $.echo_statement),
+        choice(prec(2, /[^"{]+/), prec(1, $.echo_statement), prec(0, "{")),
       ),
   },
 });

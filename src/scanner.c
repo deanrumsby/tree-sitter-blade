@@ -10,8 +10,6 @@ enum TokenType {
     UNESCAPED_PHP_TEXT,
 
     // html tokens
-    SINGLE_QUOTES_ATTRIBUTE_VALUE_FRAGMENT,
-    DOUBLE_QUOTES_ATTRIBUTE_VALUE_FRAGMENT,
     START_TAG_NAME,
     SCRIPT_START_TAG_NAME,
     STYLE_START_TAG_NAME,
@@ -341,6 +339,8 @@ static bool scan_unescaped_php_text(Scanner *scanner, TSLexer *lexer) {
     return false;
 }
 
+// can probably return this to a regex rule within the grammar, will leave it
+// for now though
 static bool scan_text(Scanner *scanner, TSLexer *lexer) {
     if (lexer->eof(lexer)) {
         return false;
@@ -375,37 +375,6 @@ static bool scan_text(Scanner *scanner, TSLexer *lexer) {
         return false;
     }
     lexer->result_symbol = TEXT;
-    return true;
-}
-
-static bool scan_quoted_attribute_value_fragment(Scanner *scanner,
-                                                 TSLexer *lexer, char delim) {
-
-    bool zero_width = true;
-    while (lexer->lookahead) {
-        if (lexer->lookahead == delim) {
-            lexer->mark_end(lexer);
-            break;
-        }
-        if (lexer->lookahead == '{') {
-            lexer->mark_end(lexer);
-            advance(lexer);
-            if (lexer->lookahead == '{') {
-                break;
-            }
-        }
-        zero_width = false;
-        advance(lexer);
-    }
-
-    if (zero_width) {
-        return false;
-    }
-    if (delim == '\'') {
-        lexer->result_symbol = SINGLE_QUOTES_ATTRIBUTE_VALUE_FRAGMENT;
-    } else {
-        lexer->result_symbol = DOUBLE_QUOTES_ATTRIBUTE_VALUE_FRAGMENT;
-    }
     return true;
 }
 
@@ -466,14 +435,6 @@ static bool scan(Scanner *scanner, TSLexer *lexer, const bool *valid_symbols) {
             return valid_symbols[START_TAG_NAME]
                        ? scan_start_tag_name(scanner, lexer)
                        : scan_end_tag_name(scanner, lexer);
-        }
-
-        if (valid_symbols[SINGLE_QUOTES_ATTRIBUTE_FRAG]) {
-            return scan_quoted_attribute_value_fragment(scanner, lexer, '\'');
-        }
-
-        if (valid_symbols[DOUBLE_QUOTES_ATTRIBUTE_FRAG]) {
-            return scan_quoted_attribute_value_fragment(scanner, lexer, '"');
         }
 
         if (valid_symbols[TEXT]) {

@@ -255,6 +255,10 @@
           "named": true
         },
         {
+          "type": "echo_statement",
+          "named": true
+        },
+        {
           "type": "tag_name",
           "named": true
         }
@@ -271,6 +275,10 @@
       "types": [
         {
           "type": "attribute",
+          "named": true
+        },
+        {
+          "type": "echo_statement",
           "named": true
         },
         {
@@ -385,6 +393,10 @@
   {
     "type": "text",
     "named": true
+  },
+  {
+    "type": "{",
+    "named": false
   },
   {
     "type": "{{",

@@ -24,6 +24,8 @@ module.exports = grammar({
   externals: ($) => [
     $.escaped_echo_statement,
     $.unescaped_echo_statement,
+    $._single_quoted_attribute_value_fragment,
+    $._double_quoted_attribute_value_fragment,
     $._start_tag_name,
     $._script_start_tag_name,
     $._style_start_tag_name,
@@ -53,6 +55,9 @@ module.exports = grammar({
         $.style_element,
         $.erroneous_end_tag,
       ),
+
+    echo_statement: ($) =>
+      choice($.escaped_echo_statement, $.unescaped_echo_statement),
 
     element: ($) =>
       choice(
@@ -116,7 +121,7 @@ module.exports = grammar({
 
     attribute_name: (_) => /[^<>"'/=\s]+/,
 
-    attribute_value: (_) => /[^<>"'=\s]+/,
+    attribute_value: ($) => choice(/[^<>"'=\s]+/, $.echo_statement),
 
     // An entity can be named, numeric (decimal), or numeric (hexacecimal). The
     // longest entity name is 29 characters long, and the HTML spec says that
@@ -125,8 +130,28 @@ module.exports = grammar({
 
     quoted_attribute_value: ($) =>
       choice(
-        seq("'", optional(alias(/[^']+/, $.attribute_value)), "'"),
-        seq('"', optional(alias(/[^"]+/, $.attribute_value)), '"'),
+        seq(
+          "'",
+          optional(alias($._single_quotes_attribute_value, $.attribute_value)),
+          "'",
+        ),
+        seq(
+          '"',
+          optional(alias($._double_quotes_attribute_value, $.attribute_value)),
+          '"',
+        ),
+      ),
+
+    // these exist so that aliasing as $.attribute_value will still include
+    // any child echo statement in the AST
+    _single_quotes_attribute_value: ($) =>
+      repeat1(
+        choice($._single_quoted_attribute_value_fragment, $.echo_statement),
+      ),
+
+    _double_quotes_attribute_value: ($) =>
+      repeat1(
+        choice($._double_quoted_attribute_value_fragment, $.echo_statement),
       ),
   },
 });

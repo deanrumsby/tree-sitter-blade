@@ -15,3 +15,42 @@ Unescaped echo statement
 
 (document
   (unescaped_echo_statement))
+
+=============================================
+Echo statement as attribute value
+=============================================
+<button class={{ "text-lg" }}>Test</button>
+---
+
+(document
+  (element
+    (start_tag
+      (tag_name)
+      (attribute
+        (attribute_name)
+        (attribute_value
+          (echo_statement
+            (escaped_echo_statement)))))
+    (text)
+    (end_tag
+      (tag_name))))
+
+=============================================
+Echo statement within quoted attribute value
+=============================================
+<button class="text-sm {{!! "text-lg" !!}} text-xl">Test</button>
+---
+
+(document
+  (element
+    (start_tag
+      (tag_name)
+      (attribute
+        (attribute_name)
+        (quoted_attribute_value
+          (attribute_value
+            (echo_statement
+              (unescaped_echo_statement))))))
+    (text)
+    (end_tag
+      (tag_name))))

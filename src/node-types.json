@@ -23,6 +23,21 @@
     }
   },
   {
+    "type": "attribute_value",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": true,
+      "required": false,
+      "types": [
+        {
+          "type": "echo_statement",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
     "type": "doctype",
     "named": true,
     "fields": {}
@@ -61,6 +76,25 @@
         },
         {
           "type": "text",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "echo_statement",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": false,
+      "required": true,
+      "types": [
+        {
+          "type": "escaped_echo_statement",
+          "named": true
+        },
+        {
+          "type": "unescaped_echo_statement",
           "named": true
         }
       ]
@@ -280,10 +314,6 @@
   },
   {
     "type": "attribute_name",
-    "named": true
-  },
-  {
-    "type": "attribute_value",
     "named": true
   },
   {

@@ -8,15 +8,24 @@ This is an extension of the work done by the author and contributors of [tree-si
 
 I will be adding to the parser incrementally, below are the grammar features currently supported.
 
-- echo statements `{{ }}` and `{{!! !!}}`
+- echo statements `{{ }}` and `{{!! !!}}` in text and within html tags
 
 ## todo (implementation details)
 
-[ ] clean up `scan_php_text` in `scanner.c`.
+[ ] clean up `scan_escaped_echo_statement` in `scanner.c`.
+[ ] clean up `scan_unescaped_echo_statement` in `scanner.c`.
 
 ## installation
 
-In your neovim config add the following, whilst also ensuring you have [tree-sitter-php](https://github.com/tree-sitter/tree-sitter-php) installed.
+In your neovim config add the following, whilst also ensuring you have the parsers
+
+- [tree-sitter-php](https://github.com/tree-sitter/tree-sitter-php)
+- [tree-sitter-html](https://github.com/tree-sitter/tree-sitter-html)
+
+installed.
+
+I've deliberately kept the html syntax tree the same as the tree-sitter-html parser, to ensure any queries used by
+them will work here.
 
 ```lua
 local parser_config = require("nvim-treesitter.parsers").get_parser_configs()

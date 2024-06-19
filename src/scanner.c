@@ -10,6 +10,8 @@ enum TokenType {
     UNESCAPED_ECHO_STATEMENT,
 
     // html tokens
+    SINGLE_QUOTES_ATTRIBUTE_FRAG,
+    DOUBLE_QUOTES_ATTRIBUTE_FRAG,
     START_TAG_NAME,
     SCRIPT_START_TAG_NAME,
     STYLE_START_TAG_NAME,
@@ -379,6 +381,37 @@ static bool scan_text(Scanner *scanner, TSLexer *lexer) {
     return true;
 }
 
+static bool scan_quoted_attribute_value_frag(Scanner *scanner, TSLexer *lexer,
+                                             char delim) {
+
+    bool zero_width = true;
+    while (lexer->lookahead) {
+        if (lexer->lookahead == delim) {
+            lexer->mark_end(lexer);
+            break;
+        }
+        if (lexer->lookahead == '{') {
+            lexer->mark_end(lexer);
+            advance(lexer);
+            if (lexer->lookahead == '{') {
+                break;
+            }
+        }
+        zero_width = false;
+        advance(lexer);
+    }
+
+    if (zero_width) {
+        return false;
+    }
+    if (delim == '\'') {
+        lexer->result_symbol = SINGLE_QUOTES_ATTRIBUTE_FRAG;
+    } else {
+        lexer->result_symbol = DOUBLE_QUOTES_ATTRIBUTE_FRAG;
+    }
+    return true;
+}
+
 static bool scan(Scanner *scanner, TSLexer *lexer, const bool *valid_symbols) {
     if (valid_symbols[RAW_TEXT] && !valid_symbols[START_TAG_NAME] &&
         !valid_symbols[END_TAG_NAME]) {
@@ -434,6 +467,14 @@ static bool scan(Scanner *scanner, TSLexer *lexer, const bool *valid_symbols) {
             return valid_symbols[START_TAG_NAME]
                        ? scan_start_tag_name(scanner, lexer)
                        : scan_end_tag_name(scanner, lexer);
+        }
+
+        if (valid_symbols[SINGLE_QUOTES_ATTRIBUTE_FRAG]) {
+            return scan_quoted_attribute_value_frag(scanner, lexer, '\'');
+        }
+
+        if (valid_symbols[DOUBLE_QUOTES_ATTRIBUTE_FRAG]) {
+            return scan_quoted_attribute_value_frag(scanner, lexer, '"');
         }
 
         if (valid_symbols[TEXT]) {

@@ -71,6 +71,19 @@
         }
       ]
     },
+    "echo_statement": {
+      "type": "CHOICE",
+      "members": [
+        {
+          "type": "SYMBOL",
+          "name": "escaped_echo_statement"
+        },
+        {
+          "type": "SYMBOL",
+          "name": "unescaped_echo_statement"
+        }
+      ]
+    },
     "element": {
       "type": "CHOICE",
       "members": [
@@ -373,8 +386,17 @@
       "value": "[^<>\"'/=\\s]+"
     },
     "attribute_value": {
-      "type": "PATTERN",
-      "value": "[^<>\"'=\\s]+"
+      "type": "CHOICE",
+      "members": [
+        {
+          "type": "PATTERN",
+          "value": "[^<>\"'=\\s]+"
+        },
+        {
+          "type": "SYMBOL",
+          "name": "echo_statement"
+        }
+      ]
     },
     "entity": {
       "type": "PATTERN",
@@ -396,8 +418,8 @@
                 {
                   "type": "ALIAS",
                   "content": {
-                    "type": "PATTERN",
-                    "value": "[^']+"
+                    "type": "SYMBOL",
+                    "name": "_single_quotes_attribute_value"
                   },
                   "named": true,
                   "value": "attribute_value"
@@ -426,8 +448,8 @@
                 {
                   "type": "ALIAS",
                   "content": {
-                    "type": "PATTERN",
-                    "value": "[^\"]+"
+                    "type": "SYMBOL",
+                    "name": "_double_quotes_attribute_value"
                   },
                   "named": true,
                   "value": "attribute_value"
@@ -444,6 +466,38 @@
           ]
         }
       ]
+    },
+    "_single_quotes_attribute_value": {
+      "type": "REPEAT1",
+      "content": {
+        "type": "CHOICE",
+        "members": [
+          {
+            "type": "SYMBOL",
+            "name": "_single_quoted_attribute_value_fragment"
+          },
+          {
+            "type": "SYMBOL",
+            "name": "echo_statement"
+          }
+        ]
+      }
+    },
+    "_double_quotes_attribute_value": {
+      "type": "REPEAT1",
+      "content": {
+        "type": "CHOICE",
+        "members": [
+          {
+            "type": "SYMBOL",
+            "name": "_double_quoted_attribute_value_fragment"
+          },
+          {
+            "type": "SYMBOL",
+            "name": "echo_statement"
+          }
+        ]
+      }
     }
   },
   "extras": [
@@ -474,6 +528,14 @@
     {
       "type": "SYMBOL",
       "name": "unescaped_echo_statement"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "_single_quoted_attribute_value_fragment"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "_double_quoted_attribute_value_fragment"
     },
     {
       "type": "SYMBOL",

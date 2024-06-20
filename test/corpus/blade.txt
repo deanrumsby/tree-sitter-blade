@@ -104,6 +104,15 @@ Directive without argument
   (directive))
 
 ===========================
+Directive escaped
+===========================
+@@if
+---
+
+(document
+  (text))
+
+===========================
 Directive with argument
 ===========================
 @props(['active' => false])

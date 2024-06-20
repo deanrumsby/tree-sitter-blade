@@ -132,3 +132,21 @@ Expression attributes
     (text)
     (end_tag
       (tag_name))))
+
+==============================
+Escaped expression attribute
+==============================
+<x-nav-link ::active="request()->is('/')">Home</x-nav-link>
+---
+
+(document
+  (element
+    (start_tag
+      (tag_name)
+      (attribute
+        (attribute_name)
+        (quoted_attribute_value
+          (attribute_value))))
+    (text)
+    (end_tag
+      (tag_name))))

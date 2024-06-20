@@ -21,6 +21,15 @@ Unescaped echo statement
       (raw_text))))
 
 ===================================
+Echo statement escaped
+===================================
+@{{!! "hello" !!}}
+---
+
+(document
+  (text))
+
+===================================
 Echo statement within tags
 ===================================
 <button>{{ "hello" }}</button>

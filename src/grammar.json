@@ -1069,6 +1069,17 @@
                 "value": 2,
                 "content": {
                   "type": "STRING",
+                  "value": "@{{"
+                }
+              }
+            },
+            {
+              "type": "TOKEN",
+              "content": {
+                "type": "PREC",
+                "value": 2,
+                "content": {
+                  "type": "STRING",
                   "value": "@@"
                 }
               }

@@ -259,6 +259,7 @@ module.exports = grammar({
       token(
         repeat1(
           choice(
+            token(prec(2, "@{{")),
             token(prec(2, "@@")),
             /[^<>&{\s]([^<>&{]*[^<>&{\s])?/,
             /[{][^{]/,

@@ -9,8 +9,6 @@ enum TokenType {
     ESCAPED_PHP_TEXT,
     UNESCAPED_PHP_TEXT,
     ARGUMENT_PHP_TEXT,
-    DIRECTIVE_START,
-    DIRECTIVE_ARG_OPENING,
 
     // html tokens
     START_TAG_NAME,
@@ -21,7 +19,6 @@ enum TokenType {
     SELF_CLOSING_TAG_DELIMITER,
     IMPLICIT_END_TAG,
     RAW_TEXT,
-    TEXT,
     COMMENT,
 };
 
@@ -300,12 +297,6 @@ static bool scan_self_closing_tag_delimiter(Scanner *scanner, TSLexer *lexer) {
     return false;
 }
 
-static bool scan_directive_arg_opening(Scanner *scanner, TSLexer *lexer) {
-    advance(lexer);
-    lexer->result_symbol = DIRECTIVE_ARG_OPENING;
-    return true;
-}
-
 static bool scan_escaped_php_text(Scanner *scanner, TSLexer *lexer) {
     if (lexer->eof(lexer)) {
         return false;
@@ -346,44 +337,6 @@ static bool scan_unescaped_php_text(Scanner *scanner, TSLexer *lexer) {
         advance(lexer);
     }
     return false;
-}
-
-static bool scan_text(Scanner *scanner, TSLexer *lexer) {
-    if (lexer->eof(lexer)) {
-        return false;
-    }
-
-    bool zero_width = true;
-    bool at_delim = false;
-    while (!at_delim && lexer->lookahead) {
-        switch (lexer->lookahead) {
-        case '{':
-            lexer->mark_end(lexer);
-            advance(lexer);
-            if (lexer->lookahead == '{') {
-                at_delim = true;
-            } else {
-                zero_width = false;
-            }
-            break;
-
-        case '<':
-        case '>':
-        case '&':
-            at_delim = true;
-            break;
-
-        default:
-            advance(lexer);
-            zero_width = false;
-            break;
-        }
-    }
-    if (zero_width) {
-        return false;
-    }
-    lexer->result_symbol = TEXT;
-    return true;
 }
 
 static bool scan_argument_php_text(Scanner *scanner, TSLexer *lexer) {
@@ -451,12 +404,6 @@ static bool scan(Scanner *scanner, TSLexer *lexer, const bool *valid_symbols) {
         }
         break;
 
-    case '(':
-        if (valid_symbols[DIRECTIVE_ARG_OPENING]) {
-            return scan_directive_arg_opening(scanner, lexer);
-        }
-        break;
-
     case '/':
         if (valid_symbols[SELF_CLOSING_TAG_DELIMITER]) {
             return scan_self_closing_tag_delimiter(scanner, lexer);
@@ -469,12 +416,6 @@ static bool scan(Scanner *scanner, TSLexer *lexer, const bool *valid_symbols) {
             return valid_symbols[START_TAG_NAME]
                        ? scan_start_tag_name(scanner, lexer)
                        : scan_end_tag_name(scanner, lexer);
-        }
-
-        if (valid_symbols[TEXT] &&
-            !(lexer->lookahead == '@' && valid_symbols[DIRECTIVE_START]) &&
-            !valid_symbols[DIRECTIVE_ARG_OPENING]) {
-            return scan_text(scanner, lexer);
         }
     }
     return false;

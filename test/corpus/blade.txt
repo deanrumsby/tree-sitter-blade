@@ -115,6 +115,23 @@ Directive with argument
       (raw_text))))
 
 ===========================
+Directive as attribute
+===========================
+<span @class(['p-4'])>Test</span>
+---
+
+(document
+  (element
+    (start_tag
+      (tag_name)
+      (directive
+        (directive_argument
+          (raw_text))))
+    (text)
+    (end_tag
+      (tag_name))))
+
+===========================
 Expression attributes
 ===========================
 <x-nav-link :active="request()->is('/')">Home</x-nav-link>

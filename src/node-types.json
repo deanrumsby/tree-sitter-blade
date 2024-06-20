@@ -316,6 +316,10 @@
           "named": true
         },
         {
+          "type": "directive",
+          "named": true
+        },
+        {
           "type": "echo_statement",
           "named": true
         },
@@ -336,6 +340,10 @@
       "types": [
         {
           "type": "attribute",
+          "named": true
+        },
+        {
+          "type": "directive",
           "named": true
         },
         {
@@ -440,8 +448,40 @@
     "named": true
   },
   {
+    "type": "auth",
+    "named": false
+  },
+  {
+    "type": "break",
+    "named": false
+  },
+  {
+    "type": "case",
+    "named": false
+  },
+  {
+    "type": "checked",
+    "named": false
+  },
+  {
+    "type": "class",
+    "named": false
+  },
+  {
     "type": "comment",
     "named": true
+  },
+  {
+    "type": "continue",
+    "named": false
+  },
+  {
+    "type": "default",
+    "named": false
+  },
+  {
+    "type": "disabled",
+    "named": false
   },
   {
     "type": "doctype",
@@ -452,7 +492,63 @@
     "named": false
   },
   {
+    "type": "empty",
+    "named": false
+  },
+  {
+    "type": "endauth",
+    "named": false
+  },
+  {
+    "type": "endempty",
+    "named": false
+  },
+  {
+    "type": "endenv",
+    "named": false
+  },
+  {
+    "type": "endfor",
+    "named": false
+  },
+  {
+    "type": "endforeach",
+    "named": false
+  },
+  {
+    "type": "endforelse",
+    "named": false
+  },
+  {
+    "type": "endguest",
+    "named": false
+  },
+  {
     "type": "endif",
+    "named": false
+  },
+  {
+    "type": "endisset",
+    "named": false
+  },
+  {
+    "type": "endproduction",
+    "named": false
+  },
+  {
+    "type": "endsession",
+    "named": false
+  },
+  {
+    "type": "endswitch",
+    "named": false
+  },
+  {
+    "type": "endunless",
+    "named": false
+  },
+  {
+    "type": "endwhile",
     "named": false
   },
   {
@@ -460,11 +556,47 @@
     "named": true
   },
   {
+    "type": "env",
+    "named": false
+  },
+  {
     "type": "erroneous_end_tag_name",
     "named": true
   },
   {
+    "type": "for",
+    "named": false
+  },
+  {
+    "type": "foreach",
+    "named": false
+  },
+  {
+    "type": "forelse",
+    "named": false
+  },
+  {
+    "type": "guest",
+    "named": false
+  },
+  {
+    "type": "hasSection",
+    "named": false
+  },
+  {
     "type": "if",
+    "named": false
+  },
+  {
+    "type": "include",
+    "named": false
+  },
+  {
+    "type": "isset",
+    "named": false
+  },
+  {
+    "type": "production",
     "named": false
   },
   {
@@ -476,12 +608,52 @@
     "named": true
   },
   {
+    "type": "readonly",
+    "named": false
+  },
+  {
+    "type": "required",
+    "named": false
+  },
+  {
+    "type": "sectionMissing",
+    "named": false
+  },
+  {
+    "type": "selected",
+    "named": false
+  },
+  {
+    "type": "session",
+    "named": false
+  },
+  {
+    "type": "style",
+    "named": false
+  },
+  {
+    "type": "switch",
+    "named": false
+  },
+  {
     "type": "tag_name",
     "named": true
   },
   {
     "type": "text",
     "named": true
+  },
+  {
+    "type": "unless",
+    "named": false
+  },
+  {
+    "type": "while",
+    "named": false
+  },
+  {
+    "type": "yield",
+    "named": false
   },
   {
     "type": "{",

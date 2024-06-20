@@ -20,8 +20,6 @@ module.exports = grammar({
     $.escaped_php_text,
     $.unescaped_php_text,
     $.argument_php_text,
-    "@",
-    "(",
     $._start_tag_name,
     $._script_start_tag_name,
     $._style_start_tag_name,
@@ -30,7 +28,6 @@ module.exports = grammar({
     "/>",
     $._implicit_end_tag,
     $.raw_text,
-    $.text,
     $.comment,
   ],
 
@@ -57,9 +54,74 @@ module.exports = grammar({
       ),
 
     directive: ($) =>
-      seq("@", $._directive, optional(seq("(", $.directive_argument, ")"))),
+      seq(
+        token(prec(2, "@")),
+        $._directive,
+        optional(seq(token(prec(2, "(")), $.directive_argument, ")")),
+      ),
 
-    _directive: (_) => choice("props", "if", "else", "endif"),
+    directive_attribute: ($) =>
+      seq(
+        token(prec(2, "@")),
+        $._directive_attribute,
+        optional(seq(token(prec(2, "(")), $.directive_argument, ")")),
+      ),
+
+    _directive: (_) =>
+      choice(
+        "props",
+        "if",
+        "else",
+        "endif",
+        "unless",
+        "endunless",
+        "isset",
+        "endisset",
+        "empty",
+        "endempty",
+        "auth",
+        "endauth",
+        "guest",
+        "endguest",
+        "production",
+        "endproduction",
+        "env",
+        "endenv",
+        "hasSection",
+        "yield",
+        "sectionMissing",
+        "include",
+        "session",
+        "endsession",
+        "switch",
+        "case",
+        "break",
+        "default",
+        "endswitch",
+        "for",
+        "endfor",
+        "foreach",
+        "endforeach",
+        "forelse",
+        "empty",
+        "endforelse",
+        "while",
+        "endwhile",
+        "continue",
+        "class",
+        "style",
+      ),
+
+    _directive_attribute: (_) =>
+      choice(
+        "style",
+        "class",
+        "checked",
+        "selected",
+        "disabled",
+        "readonly",
+        "required",
+      ),
 
     directive_argument: ($) => alias($.argument_php_text, $.raw_text),
 
@@ -97,18 +159,13 @@ module.exports = grammar({
       ),
 
     start_tag: ($) =>
-      seq(
-        "<",
-        alias($._start_tag_name, $.tag_name),
-        repeat(choice($.attribute, $.echo_statement)),
-        ">",
-      ),
+      seq("<", alias($._start_tag_name, $.tag_name), repeat($._attribute), ">"),
 
     script_start_tag: ($) =>
       seq(
         "<",
         alias($._script_start_tag_name, $.tag_name),
-        repeat(choice($.attribute, $.echo_statement)),
+        repeat($._attribute),
         ">",
       ),
 
@@ -116,7 +173,7 @@ module.exports = grammar({
       seq(
         "<",
         alias($._style_start_tag_name, $.tag_name),
-        repeat(choice($.attribute, $.echo_statement)),
+        repeat($._attribute),
         ">",
       ),
 
@@ -124,7 +181,7 @@ module.exports = grammar({
       seq(
         "<",
         alias($._start_tag_name, $.tag_name),
-        repeat(choice($.attribute, $.echo_statement)),
+        repeat($._attribute),
         "/>",
       ),
 
@@ -141,6 +198,13 @@ module.exports = grammar({
             seq("=", choice($.attribute_value, $.quoted_attribute_value)),
           ),
         ),
+      ),
+
+    _attribute: ($) =>
+      choice(
+        $.attribute,
+        $.echo_statement,
+        alias($.directive_attribute, $.directive),
       ),
 
     expression_attribute: ($) =>
@@ -189,6 +253,17 @@ module.exports = grammar({
     _double_quotes_attribute_value: ($) =>
       repeat1(
         choice(prec(2, /[^"{]+/), prec(1, $.echo_statement), prec(0, "{")),
+      ),
+
+    text: () =>
+      token(
+        repeat1(
+          choice(
+            token(prec(2, "@@")),
+            /[^<>&{\s]([^<>&{]*[^<>&{\s])?/,
+            /[{][^{]/,
+          ),
+        ),
       ),
   },
 });

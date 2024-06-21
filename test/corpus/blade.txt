@@ -220,3 +220,17 @@ Directive inside attribute value
               (directive)))))
     (end_tag
       (tag_name))))
+
+=================================
+Php directive
+=================================
+@php
+$hello = "test";
+$sum = 5 + 3;
+@endphp
+---
+
+(document
+  (directive
+    (php_directive
+      (raw_text))))

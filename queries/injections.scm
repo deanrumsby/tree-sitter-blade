@@ -22,3 +22,8 @@
      (attribute_value) @injection.content
      (#set! injection.language "php_only")
      (#set! injection.include-children))))
+
+(php_directive
+  (raw_text) @injection.content
+  (#set! injection.language "php_only")
+  (#set! injection.include-children))

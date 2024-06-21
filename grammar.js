@@ -49,8 +49,19 @@ module.exports = grammar({
         $.erroneous_end_tag,
       ),
 
+    php_directive: ($) =>
+      seq(
+        token(prec(2, "@")),
+        "php",
+        alias(repeat(/[^\s\S]/), $.raw_text),
+        "@endphp",
+      ),
+
     directive: ($) =>
-      seq(token(prec(2, "@")), $._directive, optional($.directive_argument)),
+      choice(
+        $.php_directive,
+        seq(token(prec(2, "@")), $._directive, optional($.directive_argument)),
+      ),
 
     directive_argument: ($) =>
       seq(token(prec(2, "(")), $._directive_argument, ")"),
@@ -136,6 +147,7 @@ module.exports = grammar({
         "endPrependOnce",
         "error",
         "enderror",
+        "use",
       ),
 
     _directive_attribute: (_) =>

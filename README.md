@@ -4,23 +4,26 @@ A tree-sitter grammar for Laravel blade files.
 
 This is an extension of the work done by the author and contributors of [tree-sitter-html](https://github.com/tree-sitter/tree-sitter-html).
 
-## status
+## Status
 
-I will be adding to the parser incrementally, below are the grammar features currently supported.
+The grammar supports most of the base Laravel features, however there are some caveats:
 
-- echo statements `{{ }}` and `{{!! !!}}` in text and within html tags
+- All directives outside of the @php directive are currently creating incorrect syntax trees, so don't rely on
+  the trees to reveal an error in your syntax! The syntax trees created however do allow for nice syntax highlighting,
+  and the next work to be done is reworking the grammar with the correct syntax trees.
+- All directives are case sensitive (with what I believe is the common casing used). Again this will be fixed whilst
+  updating the directive logic.
+- There are probably missing keywords/ features/ bugs, but I will add/ update these as I go.
+- I can't catch the echo statements embedded within `<script>` tags. This is because the parsing gets handed off to the
+  javascript parser, so I don't believe I can help this.
 
-## todo (implementation details)
-
-[ ] clean up `scan_escaped_echo_statement` in `scanner.c`.
-[ ] clean up `scan_unescaped_echo_statement` in `scanner.c`.
-
-## installation
+## Installation
 
 In your neovim config add the following, whilst also ensuring you have the parsers
 
 - [tree-sitter-php](https://github.com/tree-sitter/tree-sitter-php)
 - [tree-sitter-html](https://github.com/tree-sitter/tree-sitter-html)
+- [tree-sitter-javascript](https://github.com/tree-sitter/tree-sitter-javascript)
 
 installed.
 

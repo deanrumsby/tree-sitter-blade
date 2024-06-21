@@ -84,7 +84,7 @@
         }
       ]
     },
-    "directive": {
+    "php_directive": {
       "type": "SEQ",
       "members": [
         {
@@ -99,18 +99,63 @@
           }
         },
         {
-          "type": "SYMBOL",
-          "name": "_directive"
+          "type": "STRING",
+          "value": "php"
         },
         {
-          "type": "CHOICE",
+          "type": "ALIAS",
+          "content": {
+            "type": "REPEAT",
+            "content": {
+              "type": "PATTERN",
+              "value": "[^\\s\\S]"
+            }
+          },
+          "named": true,
+          "value": "raw_text"
+        },
+        {
+          "type": "STRING",
+          "value": "@endphp"
+        }
+      ]
+    },
+    "directive": {
+      "type": "CHOICE",
+      "members": [
+        {
+          "type": "SYMBOL",
+          "name": "php_directive"
+        },
+        {
+          "type": "SEQ",
           "members": [
             {
-              "type": "SYMBOL",
-              "name": "directive_argument"
+              "type": "TOKEN",
+              "content": {
+                "type": "PREC",
+                "value": 2,
+                "content": {
+                  "type": "STRING",
+                  "value": "@"
+                }
+              }
             },
             {
-              "type": "BLANK"
+              "type": "SYMBOL",
+              "name": "_directive"
+            },
+            {
+              "type": "CHOICE",
+              "members": [
+                {
+                  "type": "SYMBOL",
+                  "name": "directive_argument"
+                },
+                {
+                  "type": "BLANK"
+                }
+              ]
             }
           ]
         }
@@ -467,6 +512,10 @@
         {
           "type": "STRING",
           "value": "enderror"
+        },
+        {
+          "type": "STRING",
+          "value": "use"
         }
       ]
     },

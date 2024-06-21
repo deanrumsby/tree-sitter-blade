@@ -61,6 +61,10 @@
         {
           "type": "directive_argument",
           "named": true
+        },
+        {
+          "type": "php_directive",
+          "named": true
         }
       ]
     }
@@ -271,6 +275,21 @@
     }
   },
   {
+    "type": "php_directive",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": false,
+      "required": false,
+      "types": [
+        {
+          "type": "raw_text",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
     "type": "quoted_attribute_value",
     "named": true,
     "fields": {},
@@ -474,6 +493,10 @@
   },
   {
     "type": "@@",
+    "named": false
+  },
+  {
+    "type": "@endphp",
     "named": false
   },
   {
@@ -705,6 +728,10 @@
     "named": false
   },
   {
+    "type": "php",
+    "named": false
+  },
+  {
     "type": "prepend",
     "named": false
   },
@@ -766,6 +793,10 @@
   },
   {
     "type": "unless",
+    "named": false
+  },
+  {
+    "type": "use",
     "named": false
   },
   {

@@ -50,3 +50,5 @@ parser_config.blade = {
 ```
 
 then copy the `queries` directory from this repo as `queries/blade` in your `~/.config/nvim` directory.
+
+Finally run `:TSInstall blade` within neovim to download and install the parser.

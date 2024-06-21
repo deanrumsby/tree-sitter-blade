@@ -46,6 +46,11 @@
     }
   },
   {
+    "type": "blade_comment",
+    "named": true,
+    "fields": {}
+  },
+  {
     "type": "directive",
     "named": true,
     "fields": {},
@@ -131,6 +136,10 @@
       "multiple": false,
       "required": true,
       "types": [
+        {
+          "type": "blade_comment",
+          "named": true
+        },
         {
           "type": "escaped_echo_statement",
           "named": true
@@ -429,6 +438,10 @@
   },
   {
     "type": ")",
+    "named": false
+  },
+  {
+    "type": "--}}",
     "named": false
   },
   {
@@ -773,6 +786,10 @@
   },
   {
     "type": "{{!!",
+    "named": false
+  },
+  {
+    "type": "{{--",
     "named": false
   },
   {

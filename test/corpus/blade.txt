@@ -106,6 +106,17 @@ Echo statement within quoted attribute value
     (end_tag
       (tag_name))))
 
+===================================
+Blade comment
+===================================
+{{-- "hello" --}}
+---
+
+(document
+  (text
+    (echo_statement
+      (blade_comment))))
+
 ===========================
 Directive without argument
 ===========================

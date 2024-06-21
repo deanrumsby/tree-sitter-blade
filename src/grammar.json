@@ -526,6 +526,10 @@
         {
           "type": "SYMBOL",
           "name": "unescaped_echo_statement"
+        },
+        {
+          "type": "SYMBOL",
+          "name": "blade_comment"
         }
       ]
     },
@@ -576,6 +580,26 @@
         {
           "type": "STRING",
           "value": "!!}}"
+        }
+      ]
+    },
+    "blade_comment": {
+      "type": "SEQ",
+      "members": [
+        {
+          "type": "STRING",
+          "value": "{{--"
+        },
+        {
+          "type": "REPEAT",
+          "content": {
+            "type": "PATTERN",
+            "value": "[^\\s\\S]"
+          }
+        },
+        {
+          "type": "STRING",
+          "value": "--}}"
         }
       ]
     },

@@ -38,8 +38,6 @@ module.exports = grammar({
 
     word: (_) => /[a-zA-Z]+/,
 
-    // _blade_node: ($) => choice($.directive, $.echo_statement),
-
     _node: ($) =>
       choice(
         $.doctype,
@@ -50,10 +48,6 @@ module.exports = grammar({
         $.style_element,
         $.erroneous_end_tag,
       ),
-
-    // php_directive: ($) => seq(token(prec(2, "@")), "php", (/[^@]*/,
-
-    // directive: ($) => choice($.if_directive),
 
     directive: ($) =>
       seq(token(prec(2, "@")), $._directive, optional($.directive_argument)),
@@ -158,13 +152,19 @@ module.exports = grammar({
     _directive_attribute_value: (_) => choice("error", "enderror"),
 
     echo_statement: ($) =>
-      choice($.escaped_echo_statement, $.unescaped_echo_statement),
+      choice(
+        $.escaped_echo_statement,
+        $.unescaped_echo_statement,
+        $.blade_comment,
+      ),
 
     escaped_echo_statement: ($) =>
       seq("{{", alias(repeat(/[^\s\S]/), $.raw_text), "}}"),
 
     unescaped_echo_statement: ($) =>
       seq("{{!!", alias(repeat(/[^\s\S]/), $.raw_text), "!!}}"),
+
+    blade_comment: (_) => seq("{{--", repeat(/[^\s\S]/), "--}}"),
 
     element: ($) =>
       choice(

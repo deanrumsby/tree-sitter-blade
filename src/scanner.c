@@ -299,18 +299,18 @@ static bool scan_argument_php_text(Scanner *scanner, TSLexer *lexer) {
     if (lexer->eof(lexer)) {
         return false;
     }
-    int params = 0;
+    int parens = 0;
     while (lexer->lookahead) {
         char next = lexer->lookahead;
-        if (params == 0 && next == ')') {
+        if (parens == 0 && next == ')') {
             lexer->result_symbol = ARGUMENT_PHP_TEXT;
             return true;
         }
         if (next == '(') {
-            params++;
+            parens++;
         }
         if (next == ')') {
-            params--;
+            parens--;
         }
         advance(lexer);
     }

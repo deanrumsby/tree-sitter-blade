@@ -9,3 +9,5 @@
 (expression_attribute
   (attribute_name) @tag.attribute
   (quoted_attribute_value)) @string
+
+(blade_comment) @comment

@@ -6,7 +6,7 @@ This is an extension of the work done by the author and contributors of [tree-si
 
 ## Status
 
-The grammar supports most of the base Laravel features, however there are some caveats:
+The grammar supports most of the base blade features, however there are some caveats:
 
 - All directives outside of the @php directive are currently creating incorrect syntax trees, so don't rely on
   the trees to reveal an error in your syntax! The syntax trees created however do allow for nice syntax highlighting,

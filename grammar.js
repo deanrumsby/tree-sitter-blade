@@ -17,8 +17,6 @@ module.exports = grammar({
   extras: ($) => [$.comment, /\s+/],
 
   externals: ($) => [
-    $.escaped_php_text,
-    $.unescaped_php_text,
     $.argument_php_text,
     $._start_tag_name,
     $._script_start_tag_name,
@@ -32,7 +30,7 @@ module.exports = grammar({
   ],
 
   rules: {
-    document: ($) => repeat(choice($._blade_node, $._node)),
+    document: ($) => repeat(choice($.directive, $._node)),
 
     doctype: ($) => seq("<!", alias($._doctype, "doctype"), /[^>]+/, ">"),
 
@@ -40,7 +38,7 @@ module.exports = grammar({
 
     word: (_) => /[a-zA-Z]+/,
 
-    _blade_node: ($) => choice($.echo_statement, $.directive),
+    // _blade_node: ($) => choice($.directive, $.echo_statement),
 
     _node: ($) =>
       choice(
@@ -53,22 +51,39 @@ module.exports = grammar({
         $.erroneous_end_tag,
       ),
 
+    // php_directive: ($) => seq(token(prec(2, "@")), "php", (/[^@]*/,
+
+    // directive: ($) => choice($.if_directive),
+
     directive: ($) =>
-      seq(
-        token(prec(2, "@")),
-        $._directive,
-        optional(seq(token(prec(2, "(")), $.directive_argument, ")")),
-      ),
+      seq(token(prec(2, "@")), $._directive, optional($.directive_argument)),
+
+    directive_argument: ($) =>
+      seq(token(prec(2, "(")), $._directive_argument, ")"),
+
+    _directive_argument: ($) => alias($.argument_php_text, $.raw_text),
 
     directive_attribute: ($) =>
       seq(
         token(prec(2, "@")),
         $._directive_attribute,
-        optional(seq(token(prec(2, "(")), $.directive_argument, ")")),
+        optional($.directive_argument),
+      ),
+
+    directive_attribute_value: ($) =>
+      seq(
+        token(prec(2, "@")),
+        $._directive_attribute_value,
+        optional($.directive_argument),
       ),
 
     _directive: (_) =>
       choice(
+        "inject",
+        "fragment",
+        "endfragment",
+        "csrf",
+        "method",
         "props",
         "if",
         "else",
@@ -108,8 +123,25 @@ module.exports = grammar({
         "while",
         "endwhile",
         "continue",
-        "class",
-        "style",
+        "include",
+        "includeIf",
+        "includeWhen",
+        "includeUnless",
+        "includeFirst",
+        "each",
+        "once",
+        "push",
+        "pushIf",
+        "endPushIf",
+        "endpush",
+        "endonce",
+        "prepend",
+        "pushOnce",
+        "endPushOnce",
+        "prependOnce",
+        "endPrependOnce",
+        "error",
+        "enderror",
       ),
 
     _directive_attribute: (_) =>
@@ -123,22 +155,22 @@ module.exports = grammar({
         "required",
       ),
 
-    directive_argument: ($) => alias($.argument_php_text, $.raw_text),
+    _directive_attribute_value: (_) => choice("error", "enderror"),
 
     echo_statement: ($) =>
       choice($.escaped_echo_statement, $.unescaped_echo_statement),
 
     escaped_echo_statement: ($) =>
-      seq("{{", alias(optional($.escaped_php_text), $.raw_text), "}}"),
+      seq("{{", alias(repeat(/[^\s\S]/), $.raw_text), "}}"),
 
     unescaped_echo_statement: ($) =>
-      seq("{{!!", alias(optional($.unescaped_php_text), $.raw_text), "!!}}"),
+      seq("{{!!", alias(repeat(/[^\s\S]/), $.raw_text), "!!}}"),
 
     element: ($) =>
       choice(
         seq(
           $.start_tag,
-          repeat(choice($._blade_node, $._node)),
+          repeat(choice($.directive, $._node)),
           choice($.end_tag, $._implicit_end_tag),
         ),
         $.self_closing_tag,
@@ -233,38 +265,33 @@ module.exports = grammar({
       choice(
         seq(
           "'",
-          optional(alias($._single_quotes_attribute_value, $.attribute_value)),
+          alias(
+            repeat(choice(/[^']/, $._quoted_attribute_value)),
+            $.attribute_value,
+          ),
           "'",
         ),
         seq(
           '"',
-          optional(alias($._double_quotes_attribute_value, $.attribute_value)),
+          alias(
+            repeat(choice(/[^"]/, $._quoted_attribute_value)),
+            $.attribute_value,
+          ),
           '"',
         ),
       ),
 
-    // these exist so that aliasing as $.attribute_value will still include
-    // any child echo statement in the AST
-    _single_quotes_attribute_value: ($) =>
-      repeat1(
-        choice(prec(2, /[^'{]+/), prec(1, $.echo_statement), prec(0, "{")),
-      ),
+    _quoted_attribute_value: ($) =>
+      choice($.echo_statement, alias($.directive_attribute_value, $.directive)),
 
-    _double_quotes_attribute_value: ($) =>
-      repeat1(
-        choice(prec(2, /[^"{]+/), prec(1, $.echo_statement), prec(0, "{")),
-      ),
+    text: ($) => prec.right(repeat1(choice($.echo_statement, $._text))),
 
-    text: () =>
-      token(
-        repeat1(
-          choice(
-            token(prec(2, "@{{")),
-            token(prec(2, "@@")),
-            /[^<>&{\s]([^<>&{]*[^<>&{\s])?/,
-            /[{][^{]/,
-          ),
-        ),
+    _text: (_) =>
+      choice(
+        token(prec(2, "@{{")),
+        token(prec(2, "@@")),
+        token(prec(1, /[^<>&{\s]([^<>&{]*[^<>&{\s])?/)),
+        token(prec(0, "{")),
       ),
   },
 });

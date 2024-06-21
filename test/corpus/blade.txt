@@ -5,9 +5,10 @@ Escaped echo statement
 ---
 
 (document
-  (echo_statement
-    (escaped_echo_statement
-      (raw_text))))
+  (text
+    (echo_statement
+      (escaped_echo_statement
+        (raw_text)))))
 
 ===================================
 Unescaped echo statement
@@ -16,9 +17,10 @@ Unescaped echo statement
 ---
 
 (document
-  (echo_statement
-    (unescaped_echo_statement
-      (raw_text))))
+  (text
+    (echo_statement
+      (unescaped_echo_statement
+        (raw_text)))))
 
 ===================================
 Echo statement escaped
@@ -39,9 +41,10 @@ Echo statement within tags
   (element
     (start_tag
       (tag_name))
-    (echo_statement
-      (escaped_echo_statement
-        (raw_text)))
+    (text
+      (echo_statement
+        (escaped_echo_statement
+          (raw_text))))
     (end_tag
       (tag_name))))
 
@@ -183,5 +186,26 @@ Escaped expression attribute
         (quoted_attribute_value
           (attribute_value))))
     (text)
+    (end_tag
+      (tag_name))))
+
+=================================
+Directive inside attribute value
+=================================
+<button class="@error('title') is-invalid @enderror"></button>
+---
+
+(document
+  (element
+    (start_tag
+      (tag_name)
+      (attribute
+        (attribute_name)
+          (quoted_attribute_value
+            (attribute_value
+              (directive
+                (directive_argument
+                  (raw_text)))
+              (directive)))))
     (end_tag
       (tag_name))))

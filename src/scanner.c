@@ -6,8 +6,6 @@
 
 enum TokenType {
     // blade tokens
-    ESCAPED_PHP_TEXT,
-    UNESCAPED_PHP_TEXT,
     ARGUMENT_PHP_TEXT,
 
     // html tokens
@@ -297,48 +295,6 @@ static bool scan_self_closing_tag_delimiter(Scanner *scanner, TSLexer *lexer) {
     return false;
 }
 
-static bool scan_escaped_php_text(Scanner *scanner, TSLexer *lexer) {
-    if (lexer->eof(lexer)) {
-        return false;
-    }
-    while (lexer->lookahead) {
-        if (lexer->lookahead == '}') {
-            lexer->mark_end(lexer);
-            advance(lexer);
-            if (lexer->lookahead == '}') {
-                lexer->result_symbol = ESCAPED_PHP_TEXT;
-                return true;
-            }
-        }
-        advance(lexer);
-    }
-    return false;
-}
-
-static bool scan_unescaped_php_text(Scanner *scanner, TSLexer *lexer) {
-    if (lexer->eof(lexer)) {
-        return false;
-    }
-    while (lexer->lookahead) {
-        if (lexer->lookahead == '!') {
-            lexer->mark_end(lexer);
-            advance(lexer);
-            if (lexer->lookahead == '!') {
-                advance(lexer);
-                if (lexer->lookahead == '}') {
-                    advance(lexer);
-                    if (lexer->lookahead == '}') {
-                        lexer->result_symbol = UNESCAPED_PHP_TEXT;
-                        return true;
-                    }
-                }
-            }
-        }
-        advance(lexer);
-    }
-    return false;
-}
-
 static bool scan_argument_php_text(Scanner *scanner, TSLexer *lexer) {
     if (lexer->eof(lexer)) {
         return false;
@@ -362,14 +318,6 @@ static bool scan_argument_php_text(Scanner *scanner, TSLexer *lexer) {
 }
 
 static bool scan(Scanner *scanner, TSLexer *lexer, const bool *valid_symbols) {
-    if (valid_symbols[ESCAPED_PHP_TEXT]) {
-        return scan_escaped_php_text(scanner, lexer);
-    }
-
-    if (valid_symbols[UNESCAPED_PHP_TEXT]) {
-        return scan_unescaped_php_text(scanner, lexer);
-    }
-
     if (valid_symbols[ARGUMENT_PHP_TEXT]) {
         return scan_argument_php_text(scanner, lexer);
     }

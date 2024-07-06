@@ -263,6 +263,30 @@
       "members": [
         {
           "type": "STRING",
+          "value": "click"
+        },
+        {
+          "type": "STRING",
+          "value": "livewireStyles"
+        },
+        {
+          "type": "STRING",
+          "value": "livewireScripts"
+        },
+        {
+          "type": "STRING",
+          "value": "stack"
+        },
+        {
+          "type": "STRING",
+          "value": "livewire"
+        },
+        {
+          "type": "STRING",
+          "value": "vite"
+        },
+        {
+          "type": "STRING",
           "value": "inject"
         },
         {

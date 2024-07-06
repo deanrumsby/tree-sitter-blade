@@ -528,6 +528,10 @@
     "named": false
   },
   {
+    "type": "click",
+    "named": false
+  },
+  {
     "type": "comment",
     "named": true
   },
@@ -720,6 +724,18 @@
     "named": false
   },
   {
+    "type": "livewire",
+    "named": false
+  },
+  {
+    "type": "livewireScripts",
+    "named": false
+  },
+  {
+    "type": "livewireStyles",
+    "named": false
+  },
+  {
     "type": "method",
     "named": false
   },
@@ -780,6 +796,10 @@
     "named": false
   },
   {
+    "type": "stack",
+    "named": false
+  },
+  {
     "type": "style",
     "named": false
   },
@@ -797,6 +817,10 @@
   },
   {
     "type": "use",
+    "named": false
+  },
+  {
+    "type": "vite",
     "named": false
   },
   {

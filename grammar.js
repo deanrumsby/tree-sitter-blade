@@ -84,6 +84,12 @@ module.exports = grammar({
 
     _directive: (_) =>
       choice(
+        "click",
+        "livewireStyles",
+        "livewireScripts",
+        "stack",
+        "livewire",
+        "vite",
         "inject",
         "fragment",
         "endfragment",

@@ -17,6 +17,8 @@ The grammar supports most of the base blade features, however there are some cav
 - I can't catch the echo statements embedded within `<script>` tags. This is because the parsing gets handed off to the
   javascript parser, so I don't believe I can help this.
 
+I have added support for the long-form Alpine.js attributes.
+
 ## Installation
 
 In your neovim config add the following, whilst also ensuring you have the parsers

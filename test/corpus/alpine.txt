@@ -1,0 +1,56 @@
+===================================
+Attribute without value
+===================================
+<div x-cloak>
+</div>
+---
+
+(document
+  (element
+    (start_tag
+      (tag_name)
+      (attribute
+      (alpine_attribute
+        (attribute_name))))
+    (end_tag
+      (tag_name))))
+
+===================================
+Attribute with value
+===================================
+<div x-data="{ open: false }">
+</div>
+---
+
+(document
+  (element
+    (start_tag
+      (tag_name)
+      (attribute
+      (alpine_attribute
+        (attribute_name)
+        (quoted_attribute_value
+          (attribute_value)))))
+    (end_tag
+      (tag_name))))
+
+===================================
+Attribute with event/detail
+===================================
+<button x-on:click="open = ! open">
+  Toggle
+</button>
+---
+
+(document
+  (element
+    (start_tag
+      (tag_name)
+      (attribute
+      (alpine_attribute
+        (attribute_name)
+        (quoted_attribute_value
+          (attribute_value)))))
+    (text)
+    (end_tag
+      (tag_name))))

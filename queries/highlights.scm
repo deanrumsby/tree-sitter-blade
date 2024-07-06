@@ -6,6 +6,10 @@
 
 (directive) @keyword.directive
 
+(alpine_attribute
+   (attribute_name) @tag.attribute
+   (quoted_attribute_value)) @string
+
 (expression_attribute
   (attribute_name) @tag.attribute
   (quoted_attribute_value)) @string

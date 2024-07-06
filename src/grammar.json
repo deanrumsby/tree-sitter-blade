@@ -938,9 +938,150 @@
         }
       ]
     },
+    "alpine_attribute": {
+      "type": "SEQ",
+      "members": [
+        {
+          "type": "ALIAS",
+          "content": {
+            "type": "SYMBOL",
+            "name": "alpine_attribute_name"
+          },
+          "named": true,
+          "value": "attribute_name"
+        },
+        {
+          "type": "CHOICE",
+          "members": [
+            {
+              "type": "SEQ",
+              "members": [
+                {
+                  "type": "STRING",
+                  "value": "="
+                },
+                {
+                  "type": "SYMBOL",
+                  "name": "quoted_attribute_value"
+                }
+              ]
+            },
+            {
+              "type": "BLANK"
+            }
+          ]
+        }
+      ]
+    },
+    "alpine_attribute_name": {
+      "type": "SEQ",
+      "members": [
+        {
+          "type": "SYMBOL",
+          "name": "_alpine_attribute_name"
+        },
+        {
+          "type": "CHOICE",
+          "members": [
+            {
+              "type": "SEQ",
+              "members": [
+                {
+                  "type": "TOKEN",
+                  "content": {
+                    "type": "PREC",
+                    "value": 1,
+                    "content": {
+                      "type": "STRING",
+                      "value": ":"
+                    }
+                  }
+                },
+                {
+                  "type": "PATTERN",
+                  "value": "[^<>\"'=\\s]+"
+                }
+              ]
+            },
+            {
+              "type": "BLANK"
+            }
+          ]
+        }
+      ]
+    },
+    "_alpine_attribute_name": {
+      "type": "CHOICE",
+      "members": [
+        {
+          "type": "STRING",
+          "value": "x-data"
+        },
+        {
+          "type": "STRING",
+          "value": "x-bind"
+        },
+        {
+          "type": "STRING",
+          "value": "x-on"
+        },
+        {
+          "type": "STRING",
+          "value": "x-text"
+        },
+        {
+          "type": "STRING",
+          "value": "x-html"
+        },
+        {
+          "type": "STRING",
+          "value": "x-model"
+        },
+        {
+          "type": "STRING",
+          "value": "x-show"
+        },
+        {
+          "type": "STRING",
+          "value": "x-transition"
+        },
+        {
+          "type": "STRING",
+          "value": "x-for"
+        },
+        {
+          "type": "STRING",
+          "value": "x-if"
+        },
+        {
+          "type": "STRING",
+          "value": "x-init"
+        },
+        {
+          "type": "STRING",
+          "value": "x-effect"
+        },
+        {
+          "type": "STRING",
+          "value": "x-ref"
+        },
+        {
+          "type": "STRING",
+          "value": "x-cloak"
+        },
+        {
+          "type": "STRING",
+          "value": "x-ignore"
+        }
+      ]
+    },
     "attribute": {
       "type": "CHOICE",
       "members": [
+        {
+          "type": "SYMBOL",
+          "name": "alpine_attribute"
+        },
         {
           "type": "SYMBOL",
           "name": "expression_attribute"
@@ -1097,8 +1238,15 @@
       ]
     },
     "attribute_name": {
-      "type": "PATTERN",
-      "value": "[^<>\"'/=\\s]+"
+      "type": "TOKEN",
+      "content": {
+        "type": "PREC",
+        "value": -1,
+        "content": {
+          "type": "PATTERN",
+          "value": "[^<>\"'/=\\s]+"
+        }
+      }
     },
     "attribute_value": {
       "type": "CHOICE",

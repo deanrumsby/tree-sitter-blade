@@ -1,5 +1,24 @@
 [
   {
+    "type": "alpine_attribute",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": true,
+      "required": true,
+      "types": [
+        {
+          "type": "attribute_name",
+          "named": true
+        },
+        {
+          "type": "quoted_attribute_value",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
     "type": "attribute",
     "named": true,
     "fields": {},
@@ -7,6 +26,10 @@
       "multiple": true,
       "required": true,
       "types": [
+        {
+          "type": "alpine_attribute",
+          "named": true
+        },
         {
           "type": "attribute_name",
           "named": true
@@ -25,6 +48,11 @@
         }
       ]
     }
+  },
+  {
+    "type": "attribute_name",
+    "named": true,
+    "fields": {}
   },
   {
     "type": "attribute_value",
@@ -468,6 +496,10 @@
     "named": false
   },
   {
+    "type": ":",
+    "named": false
+  },
+  {
     "type": "<",
     "named": false
   },
@@ -502,10 +534,6 @@
   {
     "type": "@{{",
     "named": false
-  },
-  {
-    "type": "attribute_name",
-    "named": true
   },
   {
     "type": "auth",
@@ -825,6 +853,66 @@
   },
   {
     "type": "while",
+    "named": false
+  },
+  {
+    "type": "x-bind",
+    "named": false
+  },
+  {
+    "type": "x-cloak",
+    "named": false
+  },
+  {
+    "type": "x-data",
+    "named": false
+  },
+  {
+    "type": "x-effect",
+    "named": false
+  },
+  {
+    "type": "x-for",
+    "named": false
+  },
+  {
+    "type": "x-html",
+    "named": false
+  },
+  {
+    "type": "x-if",
+    "named": false
+  },
+  {
+    "type": "x-ignore",
+    "named": false
+  },
+  {
+    "type": "x-init",
+    "named": false
+  },
+  {
+    "type": "x-model",
+    "named": false
+  },
+  {
+    "type": "x-on",
+    "named": false
+  },
+  {
+    "type": "x-ref",
+    "named": false
+  },
+  {
+    "type": "x-show",
+    "named": false
+  },
+  {
+    "type": "x-text",
+    "named": false
+  },
+  {
+    "type": "x-transition",
     "named": false
   },
   {

@@ -239,8 +239,40 @@ module.exports = grammar({
 
     erroneous_end_tag: ($) => seq("</", $.erroneous_end_tag_name, ">"),
 
+    alpine_attribute: ($) =>
+      seq(
+        alias($.alpine_attribute_name, $.attribute_name),
+        optional(seq("=", $.quoted_attribute_value)),
+      ),
+
+    alpine_attribute_name: ($) =>
+      seq(
+        $._alpine_attribute_name,
+        optional(seq(token(prec(1, ":")), /[^<>"'=\s]+/)),
+      ),
+
+    _alpine_attribute_name: (_) =>
+      choice(
+        "x-data",
+        "x-bind",
+        "x-on",
+        "x-text",
+        "x-html",
+        "x-model",
+        "x-show",
+        "x-transition",
+        "x-for",
+        "x-if",
+        "x-init",
+        "x-effect",
+        "x-ref",
+        "x-cloak",
+        "x-ignore",
+      ),
+
     attribute: ($) =>
       choice(
+        $.alpine_attribute,
         $.expression_attribute,
         seq(
           $.attribute_name,
@@ -270,7 +302,7 @@ module.exports = grammar({
         seq('"', alias(/[^"]+/, $.attribute_value), '"'),
       ),
 
-    attribute_name: (_) => /[^<>"'/=\s]+/,
+    attribute_name: (_) => token(prec(-1, /[^<>"'/=\s]+/)),
 
     attribute_value: ($) => choice(/[^<>"'=\s]+/, $.echo_statement),
 

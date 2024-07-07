@@ -263,6 +263,14 @@
       "members": [
         {
           "type": "STRING",
+          "value": "can"
+        },
+        {
+          "type": "STRING",
+          "value": "endcan"
+        },
+        {
+          "type": "STRING",
           "value": "click"
         },
         {

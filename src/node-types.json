@@ -544,6 +544,10 @@
     "named": false
   },
   {
+    "type": "can",
+    "named": false
+  },
+  {
     "type": "case",
     "named": false
   },
@@ -609,6 +613,10 @@
   },
   {
     "type": "endauth",
+    "named": false
+  },
+  {
+    "type": "endcan",
     "named": false
   },
   {

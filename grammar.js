@@ -84,6 +84,8 @@ module.exports = grammar({
 
     _directive: (_) =>
       choice(
+        "can",
+        "endcan",
         "click",
         "livewireStyles",
         "livewireScripts",

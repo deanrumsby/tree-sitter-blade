@@ -100,6 +100,7 @@ module.exports = grammar({
         "props",
         "if",
         "else",
+        "elseif",
         "endif",
         "unless",
         "endunless",
